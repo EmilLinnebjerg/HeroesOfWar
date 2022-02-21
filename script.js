@@ -1,12 +1,17 @@
 
 let counter = 0;
 let pos = Math.floor(Math.random()*200);
-class Character{
-  constructor(name, productionCost, thumbnail, strength){
-    this.strength = strength;
+class CharacterTemplate{
+  constructor(name, productionCost, thumbnail){
     this.name=name;
     this.productionCost = productionCost;
     this.thumbnail = thumbnail;
+  }
+}
+class Character{
+  constructor(strength){
+    this.strength = strength;
+    this.xOffset = 0;
   }
 }
 /*function progressBar(pos){
@@ -38,9 +43,9 @@ const windowWidth = 850;
         }
         //alert("Starting");
 
-        var unitLongsword = new Character("Longsword Knight", 10, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg", 100);
-        var unitArcher = new Character("Archer", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg", 100);
-        var unitPolearm = new Character("Polearm Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg", 100);
+        var unitLongsword = new CharacterTemplate("Longsword Knight", 10, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
+        var unitArcher = new CharacterTemplate("Archer", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
+        var unitPolearm = new CharacterTemplate("Polearm Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
 
         var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
         var productionQueue = [5];
