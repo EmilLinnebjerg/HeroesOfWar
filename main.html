@@ -89,26 +89,27 @@
         document.body.appendChild(unit3);
 
         function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
-            widthBtn = 7;
-            heightBtn = 7;
+            widthBtn = 7.2;
+            heightBtn = 7.2;
             margin = 0.4;
             yOffSetBtn = 1;
 
             btn.className = name;
-            btn.style.width = widthBtn + "%";
-            btn.style.height = heightBtn + "%";
+            btn.style.width = widthBtn - 0.2 + "%";
+            btn.style.height = heightBtn - 0.2 + "%";
             btn.style.position = "absolute";
-            btn.style.top = yOffSetBtn + margin / 2 + "%";
-            btn.style.left = xOffSetBtn + margin / 2 + "%";
+            btn.style.top = yOffSetBtn + 0.1 + margin / 2 + "%";
+            btn.style.left = xOffSetBtn + 0.1 + margin / 2 + "%";
             btn.click;
             btn.addEventListener('click', function () { selectProduction(1, index) });
 
             var namef = name + "back";
             var front = document.createElement('div');
             front.className = namef;
-            front.style.background = "red";
+            front.style.background = "gray";
             front.style.width = widthBtn + "%";
             front.style.height = heightBtn + "%";
+            front.style.borderRadius = "8px";
             front.style.position = "absolute";
             front.style.top = yOffSetBtn + margin/2 + "%";
             front.style.left = xOffSetBtn + margin/2 + "%";
@@ -119,6 +120,7 @@
             back.style.background = "black";
             back.style.width = widthBtn + margin + "%";
             back.style.height = heightBtn + margin + "%";
+            back.style.borderRadius = "8px";
             back.style.position = "absolute";
             back.style.top = yOffSetBtn + "%";
             back.style.left = xOffSetBtn + "%";
@@ -127,29 +129,30 @@
             document.body.appendChild(front);
 
             var souce = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
-            makeUpgradeElement(souce, xOffSetBtn, yOffSetBtn + 7.6, 2, index)
-            makeUpgradeElement(souce, xOffSetBtn, yOffSetBtn + 10.3, 3, index)
+            makeUpgradeElement(souce, xOffSetBtn, yOffSetBtn + 7.8, 2, index)
+            makeUpgradeElement(souce, xOffSetBtn, yOffSetBtn + 10.5, 3, index)
         }
 
         function makeUpgradeElement(imgSrc, xOffSetBtn, yOffSetBtn, type, index) {
-            widthBtn = 7;
-            heightBtn = 2;
+            widthBtn = 7.2;
+            heightBtn = 2.2;
             margin = 0.4;
 
             var UpgradeImg = document.createElement("img");
             UpgradeImg.src = imgSrc;
-            UpgradeImg.style.width = widthBtn + "%";
-            UpgradeImg.style.height = heightBtn + "%";
+            UpgradeImg.style.width = widthBtn - 0.2 + "%";
+            UpgradeImg.style.height = heightBtn - 0.2 + "%";
             UpgradeImg.style.position = "absolute";
-            UpgradeImg.style.top = yOffSetBtn + margin / 2 + "%";
-            UpgradeImg.style.left = xOffSetBtn + margin / 2 + "%";
+            UpgradeImg.style.top = yOffSetBtn + 0.1 + margin / 2 + "%";
+            UpgradeImg.style.left = xOffSetBtn + 0.1 + margin / 2 + "%";
             UpgradeImg.click;
             UpgradeImg.addEventListener('click', function () { selectProduction(type, index) });
 
             var front = document.createElement('div');
-            front.style.background = "red";
+            front.style.background = "gray";
             front.style.width = widthBtn + "%";
             front.style.height = heightBtn + "%";
+            front.style.borderRadius = "8px";
             front.style.position = "absolute";
             front.style.top = yOffSetBtn + margin / 2 + "%";
             front.style.left = xOffSetBtn + margin / 2 + "%";
@@ -158,6 +161,7 @@
             back.style.background = "black";
             back.style.width = widthBtn + margin + "%";
             back.style.height = heightBtn + margin + "%";
+            back.style.borderRadius = "8px";
             back.style.position = "absolute";
             back.style.top = yOffSetBtn + "%";
             back.style.left = xOffSetBtn + "%";
