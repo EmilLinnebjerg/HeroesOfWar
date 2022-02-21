@@ -1,31 +1,98 @@
-<html>
-<head>
 
-</head>
-<body>
+let counter = 0;
+let pos = Math.floor(Math.random() * 200);
+var character = [];
 
-    <script>
-        const windowWidth = 850;
-        const windowHeight = 500;
+class CharacterTemplate {
+    constructor(name, productionCost, thumbnail) {
+        this.name = name;
+        this.productionCost = productionCost;
+        this.thumbnail = thumbnail;
+    }
+}
 
-        function Unit(name, productionCost, thumbnail) {
-            this.name = name;
-            this.productionCost = productionCost;
-            this.thumbnail = thumbnail;
+class Character{
+
+    constructor(strength, startPos) {
+        this.wiz = document.createElement('img');
+        this.wiz.id = "wizard" + counter;
+        this.wiz.src = "arrow.gif";
+        this.wiz.style.zIndex = 40;
+        this.wiz.style.left = startPos + "px";
+        this.wiz.style.top = 200 + "px";
+
+        this.strength = strength;
+        this.CharacterXOffSet = startPos;
+        this.BelongsToPlayer = true;
+        this.speed = 10;
+        this.nextMove = 0;
+        document.body.appendChild(this.wiz);
+    }
+
+    moveCharacter() {
+        if (this.nextMove == 0) {
+            if (this.BelongsToPlayer) {
+                if (colitionHandler(this.CharacterXOffSet, 1, 30)) {
+                    return;
+                }
+                this.CharacterXOffSet = this.CharacterXOffSet + 10;
+            }
+
+            this.nextMove = this.speed;
         }
+        else {
+            this.nextMove--;
+        }
+    }
+
+    renderUpdate() {
+        this.wiz.style.left = this.CharacterXOffSet + "px";
+    }
+}
+
+function colitionHandler(currentPos, moveBy, imageWidth) {
+    if (moveBy) {
+        if (currentPos + moveBy >= windowWidth - imageWidth) {
+            return true;
+        }
+    }
+    else {
+
+    }
+}
+
+/*function progressBar(pos){
+  let playDiv = document.getElementById('playboard');
+  let container = document.createElement('div');
+  container.style.width = 80 + "px";
+  let pBar = document.createElement('div');
+  pBar.id="myBar";
+  pBar.classList.add ("w3-blue");
+  pBar.style.height = 24 + "px";
+  pBar.style.width = 100 + "%";
+  container.style.position = 'relative';
+  container.style.left = pos + "px";
+  container.style.top = 150 + "px";
+  playDiv.style.zIndex = 80;
+  container.appendChild(pBar);
+  playDiv.appendChild(container);
+}*/
+
+const windowWidth = 850;
+const windowHeight = 500;
 
         function ProductionElement(type, thumbnail, totalTime) {
             this.type = type
             this.thumbnail = thumbnail;
-            this.Unit = null;
+            this.Character = null;
             this.timeLeft = totalTime;
             this.totalTime = totalTime;
         }
         //alert("Starting");
 
-        var unitLongsword = new Unit("Longsword Knight", 10, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
-        var unitArcher = new Unit("Archer", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
-        var unitPolearm = new Unit("Polearm Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
+var unitLongsword = new CharacterTemplate("Longsword Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
+var unitArcher = new CharacterTemplate("Archer", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
+var unitPolearm = new CharacterTemplate("Polearm Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
 
         var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
         var productionQueue = [5];
@@ -89,27 +156,26 @@
         document.body.appendChild(unit3);
 
         function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
-            widthBtn = 7.2;
-            heightBtn = 7.2;
+            widthBtn = 7;
+            heightBtn = 7;
             margin = 0.4;
             yOffSetBtn = 1;
 
             btn.className = name;
-            btn.style.width = widthBtn - 0.2 + "%";
-            btn.style.height = heightBtn - 0.2 + "%";
+            btn.style.width = widthBtn + "%";
+            btn.style.height = heightBtn + "%";
             btn.style.position = "absolute";
-            btn.style.top = yOffSetBtn + 0.1 + margin / 2 + "%";
-            btn.style.left = xOffSetBtn + 0.1 + margin / 2 + "%";
+            btn.style.top = yOffSetBtn + margin / 2 + "%";
+            btn.style.left = xOffSetBtn + margin / 2 + "%";
             btn.click;
             btn.addEventListener('click', function () { selectProduction(1, index) });
 
             var namef = name + "back";
             var front = document.createElement('div');
             front.className = namef;
-            front.style.background = "gray";
+            front.style.background = "red";
             front.style.width = widthBtn + "%";
             front.style.height = heightBtn + "%";
-            front.style.borderRadius = "8px";
             front.style.position = "absolute";
             front.style.top = yOffSetBtn + margin/2 + "%";
             front.style.left = xOffSetBtn + margin/2 + "%";
@@ -120,7 +186,6 @@
             back.style.background = "black";
             back.style.width = widthBtn + margin + "%";
             back.style.height = heightBtn + margin + "%";
-            back.style.borderRadius = "8px";
             back.style.position = "absolute";
             back.style.top = yOffSetBtn + "%";
             back.style.left = xOffSetBtn + "%";
@@ -129,30 +194,29 @@
             document.body.appendChild(front);
 
             var souce = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
-            makeUpgradeElement(souce, xOffSetBtn, yOffSetBtn + 7.8, 2, index)
-            makeUpgradeElement(souce, xOffSetBtn, yOffSetBtn + 10.5, 3, index)
+            makeUpgradeElement(souce, xOffSetBtn, yOffSetBtn + 7.6, 2, index)
+            makeUpgradeElement(souce, xOffSetBtn, yOffSetBtn + 10.3, 3, index)
         }
 
         function makeUpgradeElement(imgSrc, xOffSetBtn, yOffSetBtn, type, index) {
-            widthBtn = 7.2;
-            heightBtn = 2.2;
+            widthBtn = 7;
+            heightBtn = 2;
             margin = 0.4;
 
             var UpgradeImg = document.createElement("img");
             UpgradeImg.src = imgSrc;
-            UpgradeImg.style.width = widthBtn - 0.2 + "%";
-            UpgradeImg.style.height = heightBtn - 0.2 + "%";
+            UpgradeImg.style.width = widthBtn + "%";
+            UpgradeImg.style.height = heightBtn + "%";
             UpgradeImg.style.position = "absolute";
-            UpgradeImg.style.top = yOffSetBtn + 0.1 + margin / 2 + "%";
-            UpgradeImg.style.left = xOffSetBtn + 0.1 + margin / 2 + "%";
+            UpgradeImg.style.top = yOffSetBtn + margin / 2 + "%";
+            UpgradeImg.style.left = xOffSetBtn + margin / 2 + "%";
             UpgradeImg.click;
             UpgradeImg.addEventListener('click', function () { selectProduction(type, index) });
 
             var front = document.createElement('div');
-            front.style.background = "gray";
+            front.style.background = "red";
             front.style.width = widthBtn + "%";
             front.style.height = heightBtn + "%";
-            front.style.borderRadius = "8px";
             front.style.position = "absolute";
             front.style.top = yOffSetBtn + margin / 2 + "%";
             front.style.left = xOffSetBtn + margin / 2 + "%";
@@ -161,7 +225,6 @@
             back.style.background = "black";
             back.style.width = widthBtn + margin + "%";
             back.style.height = heightBtn + margin + "%";
-            back.style.borderRadius = "8px";
             back.style.position = "absolute";
             back.style.top = yOffSetBtn + "%";
             back.style.left = xOffSetBtn + "%";
@@ -237,11 +300,13 @@
             }
         }
 
-        function manageProduction() {
+function manageProduction() {
+    if (!isProducingSmth) { return;}
             productuinBarProgress.style.width = 6 * (productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) + "%";
             productionQueue[isProducing].timeLeft = productionQueue[isProducing].timeLeft - 1;
             if ((productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) == 0) {
                 productuinBarProgress.style.width = "0%";
+                add_mem();
                 if (isProducing == 4) { isProducing = 0; } else { isProducing++; }//so loops around instead of ordering by array placement
                 if (isProducing == productionEndSpot) {//are there more things in queue?
                     isProducingSmth = false;
@@ -266,16 +331,72 @@
             if (isProducingSmth) {
                 document.body.appendChild(productuinBarProgress)
             }
+            character[0].renderUpdate();
         }
 
         function tick() {
             manageProduction();
+            if (counter > 0) {
+                character[0].moveCharacter();
+            }
         }
 
-        setInterval(tick, 1000);//starts game loop time is in ms
-        setInterval(displayLoop, 34);//starts game loop time is in ms
+setInterval(displayLoop, 34);//starts game loop time is in ms
+setInterval(tick, 34);//starts game loop time is in ms
 
-    </script>
+function add_mem() {
+    character[counter] = new Character(100, 0);
 
-</body>
-</html> 
+  /*let playDiv = document.getElementById('playboard');
+  playDiv.appendChild(character[counter].wiz);
+  let container = document.createElement('div');
+  container.style.width = 113 + "px";
+  let pBar = document.createElement('div');
+  pBar.id="myBar"+counter;
+  pBar.classList.add ("w3-blue");
+  pBar.style.height = 24 + "px";
+  pBar.style.width = character[counter].strength + "%";
+  container.style.position = 'relative';
+  container.style.left = pos + 60 + "px";
+  container.style.top = 200 + "px";
+  playDiv.style.zIndex = 40;
+  container.appendChild(pBar);
+  playDiv.appendChild(container);
+
+
+  decay(counter);*/
+  counter++;
+}
+
+function add_wiz(){
+  let playDiv = document.getElementById('playboard');
+  let wiz = document.createElement('img');
+  wiz.src = "archer.gif";
+  wiz.style.zIndex = 50;
+  wiz.style.top = 200 + "px";
+  playDiv.appendChild(wiz);
+  window.setInterval(()=>{wiz.style.left = pos + "px";
+  pos = Math.floor(Math.random()*200);}, 500)
+}
+function decay(x){
+  let progress =  document.getElementById('myBar' + x);
+  let i=100;
+  let aliveFlag = true;
+  window.setInterval(()=>{ 
+  progress.style.width = i +"%";  
+  if(aliveFlag==false) 
+  {
+    //document.getElementById("wizard"+x).src=''; 
+    let playDiv = document.getElementById('playboard');
+    wiz = document.getElementById('wizard'+x);
+    playDiv.removeChild(wiz);
+  }
+  else{
+    if(i>=0)
+  i = i-10;
+else
+aliveFlag = false;} 
+},800);
+wiz = document.getElementById('wizard'+x);
+console.log(wiz);
+}
