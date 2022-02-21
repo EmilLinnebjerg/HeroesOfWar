@@ -1,7 +1,9 @@
-
+const windowWidth = 850;
+const windowHeight = 500;
 let counter = 0;
 let pos = Math.floor(Math.random() * 200);
-var character = [];
+let maxUnitCountBe = 8;
+var playerCharacters = [];
 
 class CharacterTemplate {
     constructor(name, productionCost, thumbnail) {
@@ -13,29 +15,31 @@ class CharacterTemplate {
 
 class Character{
 
-    constructor(strength, startPos) {
-        this.wiz = document.createElement('img');
-        this.wiz.id = "wizard" + counter;
-        this.wiz.src = "arrow.gif";
-        this.wiz.style.zIndex = 40;
-        this.wiz.style.left = startPos + "px";
-        this.wiz.style.top = 200 + "px";
+    constructor(strength, startPos, index) {
+        this.npc = document.createElement('img');
+        this.npc.id = "wizard" + counter;
+        this.npc.src = "arrow.gif";
+        this.npc.width = 200;
+        this.npc.height = 150;
+        this.npc.style.left = startPos + "px";
+        this.npc.style.top = 200 + "px";
 
+        this.index = index;
+        this.unitIsAlive = true;
         this.strength = strength;
         this.CharacterXOffSet = startPos;
         this.BelongsToPlayer = true;
         this.speed = 10;
         this.nextMove = 0;
-        document.body.appendChild(this.wiz);
+        document.body.appendChild(this.npc);
     }
 
     moveCharacter() {
         if (this.nextMove == 0) {
             if (this.BelongsToPlayer) {
-                if (colitionHandler(this.CharacterXOffSet, 1, 30)) {
-                    return;
+                if (colitionHandler(this.CharacterXOffSet, 1, 200, this.index) == false) {
+                    this.CharacterXOffSet = this.CharacterXOffSet + 10;
                 }
-                this.CharacterXOffSet = this.CharacterXOffSet + 10;
             }
 
             this.nextMove = this.speed;
@@ -46,49 +50,42 @@ class Character{
     }
 
     renderUpdate() {
-        this.wiz.style.left = this.CharacterXOffSet + "px";
+        this.npc.style.left = this.CharacterXOffSet + "px";
     }
 }
 
-function colitionHandler(currentPos, moveBy, imageWidth) {
-    if (moveBy) {
-        if (currentPos + moveBy >= windowWidth - imageWidth) {
+function colitionHandler(currentPos, moveBy, imageWidth, myIndex) {
+    if (moveBy) {//handles players units colition
+        if (currentPos + moveBy >= windowWidth - imageWidth) {//check map colition
             return true;
+        }
+        for (i = 0; i < maxUnitCountBe; i++) {
+            if (i == myIndex) {
+                continue;
+            }
+            if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {
+                if (playerCharacters[i].CharacterXOffSet > currentPos) {
+                    if (playerCharacters[i].CharacterXOffSet <= currentPos + moveBy + imageWidth) {
+                        return true;
+                    }
+                }
+            }
         }
     }
     else {
 
     }
+    return false;
 }
 
-/*function progressBar(pos){
-  let playDiv = document.getElementById('playboard');
-  let container = document.createElement('div');
-  container.style.width = 80 + "px";
-  let pBar = document.createElement('div');
-  pBar.id="myBar";
-  pBar.classList.add ("w3-blue");
-  pBar.style.height = 24 + "px";
-  pBar.style.width = 100 + "%";
-  container.style.position = 'relative';
-  container.style.left = pos + "px";
-  container.style.top = 150 + "px";
-  playDiv.style.zIndex = 80;
-  container.appendChild(pBar);
-  playDiv.appendChild(container);
-}*/
-
-const windowWidth = 850;
-const windowHeight = 500;
-
-        function ProductionElement(type, thumbnail, totalTime) {
+function ProductionElement(type, thumbnail, totalTime) {
             this.type = type
             this.thumbnail = thumbnail;
             this.Character = null;
             this.timeLeft = totalTime;
             this.totalTime = totalTime;
         }
-        //alert("Starting");
+//alert("Starting");
 
 var unitLongsword = new CharacterTemplate("Longsword Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
 var unitArcher = new CharacterTemplate("Archer", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
@@ -155,7 +152,7 @@ var unitPolearm = new CharacterTemplate("Polearm Knight", 100, "3c242eb786d1eae1
         document.body.appendChild(unit2);
         document.body.appendChild(unit3);
 
-        function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
+function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
             widthBtn = 7;
             heightBtn = 7;
             margin = 0.4;
@@ -198,7 +195,7 @@ var unitPolearm = new CharacterTemplate("Polearm Knight", 100, "3c242eb786d1eae1
             makeUpgradeElement(souce, xOffSetBtn, yOffSetBtn + 10.3, 3, index)
         }
 
-        function makeUpgradeElement(imgSrc, xOffSetBtn, yOffSetBtn, type, index) {
+function makeUpgradeElement(imgSrc, xOffSetBtn, yOffSetBtn, type, index) {
             widthBtn = 7;
             heightBtn = 2;
             margin = 0.4;
@@ -234,7 +231,7 @@ var unitPolearm = new CharacterTemplate("Polearm Knight", 100, "3c242eb786d1eae1
             document.body.appendChild(UpgradeImg);
         }
 
-        function selectProduction(type, index) {
+function selectProduction(type, index) {
             //note that types are:
             //1 = unit, 2 = speedUpgrade, 3 = dmgUpgrade
             if (productionEndSpot == isProducing && isProducingSmth == true) {
@@ -271,7 +268,7 @@ var unitPolearm = new CharacterTemplate("Polearm Knight", 100, "3c242eb786d1eae1
             }
         }
 
-        function addToProduction(num) {
+function addToProduction(num) {
             xQueueOffSet = getMyPositionInQueue(num) * 6;
 
             var productuinMenuBack = document.createElement('img');
@@ -286,7 +283,7 @@ var unitPolearm = new CharacterTemplate("Polearm Knight", 100, "3c242eb786d1eae1
 
         }
 
-        function getMyPositionInQueue(num) {
+function getMyPositionInQueue(num) {
             if (isProducing < productionEndSpot) {
                 return num - isProducing;
             }
@@ -327,17 +324,24 @@ function manageProduction() {
             }
         }
 
-        function displayLoop() {
+function displayLoop() {
             if (isProducingSmth) {
                 document.body.appendChild(productuinBarProgress)
             }
-            character[0].renderUpdate();
+
+            for (i = 0; i <= maxUnitCountBe; i++) {
+                if (playerCharacters[i].unitIsAlive == true) {
+                    playerCharacters[i].renderUpdate();
+                }
+            }
         }
 
-        function tick() {
+function tick() {
             manageProduction();
-            if (counter > 0) {
-                character[0].moveCharacter();
+            for (i = 0; i <= maxUnitCountBe; i++) {
+                if (playerCharacters[i].unitIsAlive == true) {
+                    playerCharacters[i].moveCharacter();
+                }
             }
         }
 
@@ -345,7 +349,15 @@ setInterval(displayLoop, 34);//starts game loop time is in ms
 setInterval(tick, 34);//starts game loop time is in ms
 
 function add_mem() {
-    character[counter] = new Character(100, 0);
+    //character[counter] = new Character(100, 0);
+
+    for (i = 0; i < maxUnitCountBe; i++) {
+        if (playerCharacters[i] == null || playerCharacters[i].unitIsAlive != true) {
+            playerCharacters[i] = new Character(100, 0, i);
+            break;
+        }
+    }
+
 
   /*let playDiv = document.getElementById('playboard');
   playDiv.appendChild(character[counter].wiz);
@@ -378,6 +390,7 @@ function add_wiz(){
   window.setInterval(()=>{wiz.style.left = pos + "px";
   pos = Math.floor(Math.random()*200);}, 500)
 }
+
 function decay(x){
   let progress =  document.getElementById('myBar' + x);
   let i=100;
