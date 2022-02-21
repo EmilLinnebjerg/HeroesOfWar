@@ -1,0 +1,15 @@
+img
+{
+position:absolute;
+top: 0px;
+left: 0px;
+}
+#backgroud
+{
+  z-index: 80;
+}
+#test
+{
+  position: absolute;
+  top: 500px;
+}
