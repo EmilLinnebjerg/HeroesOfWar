@@ -17,18 +17,26 @@ class CharacterTemplate {
 class Character{
 
     constructor(strength, startPos, index, belongsToPlayer) {
+        this.unitWidth = (windowWidth * 0.17);
+        this.unitHeight = (windowHeight * 0.21);
+
         this.npc = document.createElement('img');
         this.npc.id = "wizard" + counter;
         this.npc.src = "arrow.gif";
-        this.npc.width = 200;
-        this.npc.height = 150;
-        this.npc.style.left = startPos + "px";
-        this.npc.style.top = 200 + "px";
+        this.npc.width = this.unitWidth;
+        this.npc.height = this.unitHeight;
+        if (belongsToPlayer == false) {
+            this.npc.style.left = (startPos - this.unitWidth) + "px";
+        }
+        else {
+            this.npc.style.left = startPos + "px";
+        }
+        this.npc.style.top = (windowHeight*0.70) + "px";
 
         this.index = index;
         this.unitIsAlive = true;
         this.strength = strength;
-        this.CharacterXOffSet = startPos;
+        this.CharacterXOffSet = startPos - this.unitWidth;
         this.BelongsToPlayer = belongsToPlayer;
         this.speed = 10;
         this.nextMove = 0;
@@ -38,12 +46,12 @@ class Character{
     moveCharacter() {
         if (this.nextMove == 0) {
             if (this.BelongsToPlayer) {
-                if (colitionHandler(this.CharacterXOffSet, 1, 200, this.index) == false) {
+                if (colitionHandler(this.CharacterXOffSet, 10, this.unitWidth, this.index) == false) {
                     this.CharacterXOffSet = this.CharacterXOffSet + 10;
                 }
             }
             if (!this.BelongsToPlayer) {
-                if (colitionHandler(this.CharacterXOffSet, -1, 200, this.index) == false) {
+                if (colitionHandler(this.CharacterXOffSet, -10, this.unitWidth, this.index) == false) {
                     this.CharacterXOffSet = this.CharacterXOffSet - 10;
                 }
             }
@@ -154,34 +162,34 @@ var AIisProducingSmth = false;
         unit2.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
         unit3.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
 
-        createAUnitBuildElement(unit1, "unit1", 80, 1);
-        createAUnitBuildElement(unit2, "unit2", 72, 2);
-        createAUnitBuildElement(unit3, "unit3", 64, 3);
+        createAUnitBuildElement(unit1, "unit1", 0.803, 1);
+        createAUnitBuildElement(unit2, "unit2", 0.703, 2);
+        createAUnitBuildElement(unit3, "unit3", 0.603, 3);
 
         var productuinBarProgress = document.createElement('div');
         productuinBarProgress.style.background = "white";
-        productuinBarProgress.style.width = 6 + "%";
-        productuinBarProgress.style.height = 6 + "%";
+productuinBarProgress.style.width = (0.40 * windowWidth)/5 + "px";
+productuinBarProgress.style.height = (0.10 * windowHeight) + "px";
         productuinBarProgress.style.position = "absolute";
-        productuinBarProgress.style.top = 0 + "%";
-        productuinBarProgress.style.left = 0 + "%";
+productuinBarProgress.style.top = 0 + "px";
+productuinBarProgress.style.left = 0 + "px";
         productuinBarProgress.style.opacity = "0.5";
 
         var productuinMenuBack = document.createElement('div');
         productuinMenuBack.style.background = "gray";
-        productuinMenuBack.style.width = 30 + "%";
-        productuinMenuBack.style.height = 6 + "%";
+productuinMenuBack.style.width = (0.40 * windowWidth) + "px";
+productuinMenuBack.style.height = (0.10 * windowHeight) + "px";
         productuinMenuBack.style.position = "absolute";
-        productuinMenuBack.style.top = 0 + "%";
-        productuinMenuBack.style.left = 0 + "%";
+productuinMenuBack.style.top = 0 + "px";
+productuinMenuBack.style.left = 0 + "px";
 
         var productuinMenuEdge = document.createElement('div');
         productuinMenuEdge.style.background = "black";
-        productuinMenuEdge.style.width = 30.2 + "%";
-        productuinMenuEdge.style.height = 6.2 + "%";
+productuinMenuEdge.style.width = (0.404 * windowWidth) + "px";
+productuinMenuEdge.style.height = (0.105 * windowHeight) + "px";
         productuinMenuEdge.style.position = "absolute";
-        productuinMenuEdge.style.top = 0 + "%";
-        productuinMenuEdge.style.left = 0 + "%";
+productuinMenuEdge.style.top = 0 + "px";
+productuinMenuEdge.style.left = 0 + "px";
 
         document.body.appendChild(productuinMenuEdge);
         document.body.appendChild(productuinMenuBack);
@@ -191,17 +199,17 @@ var AIisProducingSmth = false;
         document.body.appendChild(unit3);
 
 function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
-            widthBtn = 7;
-            heightBtn = 7;
-            margin = 0.4;
-            yOffSetBtn = 1;
+    widthBtn = (0.09 * windowWidth);
+    heightBtn = (0.10 * windowHeight);
+            margin = 5;
+            yOffSetBtn = 0.01;
 
             btn.className = name;
-            btn.style.width = widthBtn + "%";
-            btn.style.height = heightBtn + "%";
-            btn.style.position = "absolute";
-            btn.style.top = yOffSetBtn + margin / 2 + "%";
-            btn.style.left = xOffSetBtn + margin / 2 + "%";
+    btn.style.width = widthBtn + "px";
+    btn.style.height = heightBtn + "px";
+    btn.style.position = "absolute";
+    btn.style.top = (yOffSetBtn * windowHeight) + margin  + "px";
+    btn.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin  + "px";
             btn.click;
             btn.addEventListener('click', function () { selectProduction(1, index) });
 
@@ -209,60 +217,60 @@ function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
             var front = document.createElement('div');
             front.className = namef;
             front.style.background = "red";
-            front.style.width = widthBtn + "%";
-            front.style.height = heightBtn + "%";
+    front.style.width = widthBtn + "px";
+    front.style.height = heightBtn + "px";
             front.style.position = "absolute";
-            front.style.top = yOffSetBtn + margin/2 + "%";
-            front.style.left = xOffSetBtn + margin/2 + "%";
+    front.style.top = (yOffSetBtn * windowHeight) + margin  + "px";
+    front.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin + "px";
 
             var nameb = name + "back";
             var back = document.createElement('div');
             back.className = nameb;
             back.style.background = "black";
-            back.style.width = widthBtn + margin + "%";
-            back.style.height = heightBtn + margin + "%";
+    back.style.width = widthBtn + margin + "px";
+    back.style.height = heightBtn + margin + "px";
             back.style.position = "absolute";
-            back.style.top = yOffSetBtn + "%";
-            back.style.left = xOffSetBtn + "%";
+    back.style.top = (yOffSetBtn * windowHeight) + margin / 2 + "px";
+    back.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin / 2 + "px";
 
             document.body.appendChild(back);
             document.body.appendChild(front);
 
             var souce = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
-            makeUpgradeElement(souce, xOffSetBtn, yOffSetBtn + 7.6, 2, index)
-            makeUpgradeElement(souce, xOffSetBtn, yOffSetBtn + 10.3, 3, index)
+    makeUpgradeElement(souce, xOffSetBtn, yOffSetBtn + 0.12, 2, index)
+    makeUpgradeElement(souce, xOffSetBtn, yOffSetBtn + 0.18, 3, index)
         }
 
 function makeUpgradeElement(imgSrc, xOffSetBtn, yOffSetBtn, type, index) {
-            widthBtn = 7;
-            heightBtn = 2;
-            margin = 0.4;
+    widthBtn = (0.09 * windowWidth);
+    heightBtn = (0.04 * windowHeight);
+            margin = 5;
 
             var UpgradeImg = document.createElement("img");
             UpgradeImg.src = imgSrc;
-            UpgradeImg.style.width = widthBtn + "%";
-            UpgradeImg.style.height = heightBtn + "%";
+    UpgradeImg.style.width = widthBtn + "px";
+    UpgradeImg.style.height = heightBtn + "px";
             UpgradeImg.style.position = "absolute";
-            UpgradeImg.style.top = yOffSetBtn + margin / 2 + "%";
-            UpgradeImg.style.left = xOffSetBtn + margin / 2 + "%";
+    UpgradeImg.style.top = (yOffSetBtn * windowHeight) + margin / 2 + "px";
+    UpgradeImg.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin + "px";
             UpgradeImg.click;
             UpgradeImg.addEventListener('click', function () { selectProduction(type, index) });
 
             var front = document.createElement('div');
             front.style.background = "red";
-            front.style.width = widthBtn + "%";
-            front.style.height = heightBtn + "%";
+    front.style.width = widthBtn + "px";
+    front.style.height = heightBtn + "px";
             front.style.position = "absolute";
-            front.style.top = yOffSetBtn + margin / 2 + "%";
-            front.style.left = xOffSetBtn + margin / 2 + "%";
+    front.style.top = (yOffSetBtn * windowHeight) + margin / 2 + "px";
+    front.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin + "px";
 
             var back = document.createElement('div');
             back.style.background = "black";
-            back.style.width = widthBtn + margin + "%";
-            back.style.height = heightBtn + margin + "%";
+    back.style.width = widthBtn + margin + "px";
+    back.style.height = heightBtn + margin + "px";
             back.style.position = "absolute";
-            back.style.top = yOffSetBtn + "%";
-            back.style.left = xOffSetBtn + "%";
+    back.style.top = (yOffSetBtn * windowHeight) + "px";
+    back.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin / 2 + "px";
 
             document.body.appendChild(back);
             document.body.appendChild(front);
@@ -307,15 +315,15 @@ function selectProduction(type, index) {
         }
 
 function addToProduction(num) {
-            xQueueOffSet = getMyPositionInQueue(num) * 6;
+    xQueueOffSet = getMyPositionInQueue(num) * (0.40 * windowWidth) / 5;
 
             var productuinMenuBack = document.createElement('img');
             productuinMenuBack.src = productionQueue[num].thumbnail;
-            productuinMenuBack.style.width = 6 + "%";
-            productuinMenuBack.style.height = 6 + "%";
+    productuinMenuBack.style.width = (0.40 * windowWidth) / 5 + "px";
+    productuinMenuBack.style.height = (0.10 * windowHeight) + "px";
             productuinMenuBack.style.position = "absolute";
-            productuinMenuBack.style.top = 0 + "%";
-            productuinMenuBack.style.left = 0 + xQueueOffSet + "%";
+    productuinMenuBack.style.top = 0 + "px";
+    productuinMenuBack.style.left = 0 + xQueueOffSet + "px";
 
             document.body.appendChild(productuinMenuBack);
 
@@ -339,13 +347,12 @@ function manageProduction() {
     if (AIisProducingSmth) {
         AIproduction.timeLeft--;
         if (AIproduction.timeLeft == 0) {
-            add_mem(700, false);
+            add_mem(windowWidth, false);
             AIisProducingSmth = false;
         }
     }
-
     if (!isProducingSmth) { return;}
-            productuinBarProgress.style.width = 6 * (productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) + "%";
+    productuinBarProgress.style.width = ((0.0203 * windowWidth) / 5) * (productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) + "%";
             productionQueue[isProducing].timeLeft = productionQueue[isProducing].timeLeft - 1;
             if ((productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) == 0) {
                 productuinBarProgress.style.width = "0%";
