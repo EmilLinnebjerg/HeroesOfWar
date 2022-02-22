@@ -69,10 +69,16 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex) {
             return true;
         }
         for (i = 0; i < maxUnitCount; i++) {
+            if (AICharacters[i] != null && AICharacters[i].unitIsAlive == true) {//collision between player units and AI units
+                if (AICharacters[i].CharacterXOffSet <= currentPos + moveBy + imageWidth) {
+                    return true;
+                }
+            }
+
             if (i == myIndex) {
                 continue;
             }
-            if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {
+            if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {//collision between player units and player units
                 if (playerCharacters[i].CharacterXOffSet > currentPos) {
                     if (playerCharacters[i].CharacterXOffSet <= currentPos + moveBy + imageWidth) {
                         return true;
@@ -81,8 +87,29 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex) {
             }
         }
     }
-    else {
+    else {//handles AI units colition
+        if (currentPos + moveBy <= 0) {//check map colition
+            return true;
+        }
 
+        for (i = 0; i < maxUnitCount; i++) {
+            if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {//collision between AI units and player units
+                if (playerCharacters[i].CharacterXOffSet + imageWidth >= currentPos + moveBy) {
+                    return true;
+                }
+            }
+
+            if (i == myIndex) {
+                continue;
+            }
+            if (AICharacters[i] != null && AICharacters[i].unitIsAlive == true) {//collision between player units and player units
+                if (AICharacters[i].CharacterXOffSet < currentPos) {
+                    if (AICharacters[i].CharacterXOffSet + imageWidth >= currentPos + moveBy) {
+                        return true;
+                    }
+                }
+            }
+        }
     }
     return false;
 }
@@ -313,6 +340,7 @@ function manageProduction() {
         AIproduction.timeLeft--;
         if (AIproduction.timeLeft == 0) {
             add_mem(700, false);
+            AIisProducingSmth = false;
         }
     }
 
@@ -390,7 +418,12 @@ function add_mem(position, isPlayers) {
         }
     }
     else {
-        AICharacters[0] = new Character(100, position, 0, false);
+        for (i = 0; i < maxUnitCount; i++) {
+            if (AICharacters[i] == null || AICharacters[i].unitIsAlive != true) {
+                AICharacters[i] = new Character(100, position, i, false);
+                break;
+            }
+        }
     }
 
 
