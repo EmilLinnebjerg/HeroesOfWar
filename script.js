@@ -2,8 +2,9 @@ const windowWidth = 850;
 const windowHeight = 500;
 let counter = 0;
 let pos = Math.floor(Math.random() * 200);
-let maxUnitCountBe = 8;
-var playerCharacters = [];
+let maxUnitCount = 8;
+var playerCharacters = [maxUnitCount];
+var AICharacters = [maxUnitCount];
 
 class CharacterTemplate {
     constructor(name, productionCost, thumbnail) {
@@ -15,7 +16,7 @@ class CharacterTemplate {
 
 class Character{
 
-    constructor(strength, startPos, index) {
+    constructor(strength, startPos, index, belongsToPlayer) {
         this.npc = document.createElement('img');
         this.npc.id = "wizard" + counter;
         this.npc.src = "arrow.gif";
@@ -28,7 +29,7 @@ class Character{
         this.unitIsAlive = true;
         this.strength = strength;
         this.CharacterXOffSet = startPos;
-        this.BelongsToPlayer = true;
+        this.BelongsToPlayer = belongsToPlayer;
         this.speed = 10;
         this.nextMove = 0;
         document.body.appendChild(this.npc);
@@ -39,6 +40,11 @@ class Character{
             if (this.BelongsToPlayer) {
                 if (colitionHandler(this.CharacterXOffSet, 1, 200, this.index) == false) {
                     this.CharacterXOffSet = this.CharacterXOffSet + 10;
+                }
+            }
+            if (!this.BelongsToPlayer) {
+                if (colitionHandler(this.CharacterXOffSet, -1, 200, this.index) == false) {
+                    this.CharacterXOffSet = this.CharacterXOffSet - 10;
                 }
             }
 
@@ -54,12 +60,15 @@ class Character{
     }
 }
 
+setInterval(displayLoop, 34);//starts game loop time is in ms
+setInterval(tick, 34);//starts game loop time is in ms
+
 function colitionHandler(currentPos, moveBy, imageWidth, myIndex) {
-    if (moveBy) {//handles players units colition
+    if (moveBy > 0) {//handles players units colition
         if (currentPos + moveBy >= windowWidth - imageWidth) {//check map colition
             return true;
         }
-        for (i = 0; i < maxUnitCountBe; i++) {
+        for (i = 0; i < maxUnitCount; i++) {
             if (i == myIndex) {
                 continue;
             }
@@ -91,12 +100,14 @@ var unitLongsword = new CharacterTemplate("Longsword Knight", 100, "3c242eb786d1
 var unitArcher = new CharacterTemplate("Archer", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
 var unitPolearm = new CharacterTemplate("Polearm Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
 
-        var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
-        var productionQueue = [5];
+var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
+var productionQueue = [5];
+var AIproduction;
 
-        var productionEndSpot = 0;//Watch this on game reset
-        var isProducing = 0;
-        var isProducingSmth = false;
+var productionEndSpot = 0;//Watch this on game reset
+var isProducing = 0;
+var isProducingSmth = false;
+var AIisProducingSmth = false;
 
         var background1 = document.createElement("img");
         background1.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
@@ -298,12 +309,19 @@ function getMyPositionInQueue(num) {
         }
 
 function manageProduction() {
+    if (AIisProducingSmth) {
+        AIproduction.timeLeft--;
+        if (AIproduction.timeLeft == 0) {
+            add_mem(700, false);
+        }
+    }
+
     if (!isProducingSmth) { return;}
             productuinBarProgress.style.width = 6 * (productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) + "%";
             productionQueue[isProducing].timeLeft = productionQueue[isProducing].timeLeft - 1;
             if ((productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) == 0) {
                 productuinBarProgress.style.width = "0%";
-                add_mem();
+                add_mem(0, true);
                 if (isProducing == 4) { isProducing = 0; } else { isProducing++; }//so loops around instead of ordering by array placement
                 if (isProducing == productionEndSpot) {//are there more things in queue?
                     isProducingSmth = false;
@@ -329,33 +347,50 @@ function displayLoop() {
                 document.body.appendChild(productuinBarProgress)
             }
 
-            for (i = 0; i <= maxUnitCountBe; i++) {
-                if (playerCharacters[i].unitIsAlive == true) {
+            for (i = 0; i <= maxUnitCount; i++) {
+                if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {
                     playerCharacters[i].renderUpdate();
+                }
+                if (AICharacters[i] != null && AICharacters[i].unitIsAlive == true) {
+                    AICharacters[i].renderUpdate();
                 }
             }
         }
 
 function tick() {
             manageProduction();
-            for (i = 0; i <= maxUnitCountBe; i++) {
-                if (playerCharacters[i].unitIsAlive == true) {
+            for (i = 0; i <= maxUnitCount; i++) {
+                if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {
                     playerCharacters[i].moveCharacter();
                 }
+                if (AICharacters[i] != null && AICharacters[i].unitIsAlive == true) {
+                    AICharacters[i].moveCharacter();
+                }
             }
+
+            manageAITurn();
         }
 
-setInterval(displayLoop, 34);//starts game loop time is in ms
-setInterval(tick, 34);//starts game loop time is in ms
+function manageAITurn() {
+    if (AIisProducingSmth == false) {
+        AIisProducingSmth = true;
+        AIproduction = new ProductionElement(1, unitsAvailable[0].thumbnail, unitsAvailable[0].productionCost);
+    }
+}
 
-function add_mem() {
+function add_mem(position, isPlayers) {
     //character[counter] = new Character(100, 0);
 
-    for (i = 0; i < maxUnitCountBe; i++) {
-        if (playerCharacters[i] == null || playerCharacters[i].unitIsAlive != true) {
-            playerCharacters[i] = new Character(100, 0, i);
-            break;
+    if (isPlayers) {
+        for (i = 0; i < maxUnitCount; i++) {
+            if (playerCharacters[i] == null || playerCharacters[i].unitIsAlive != true) {
+                playerCharacters[i] = new Character(100, position, i, true);
+                break;
+            }
         }
+    }
+    else {
+        AICharacters[0] = new Character(100, position, 0, false);
     }
 
 
