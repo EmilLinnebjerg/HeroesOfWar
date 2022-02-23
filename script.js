@@ -7,38 +7,51 @@ var playerCharacters = [maxUnitCount];
 var AICharacters = [maxUnitCount];
 
 class CharacterTemplate {
-    constructor(name, productionCost, thumbnail) {
+    constructor(health, dmg, moveSpeed, walking_anim, attack_anim, name, productionCost, thumbnail) {
+        this.health = health;
+        this.dmg = dmg;
+        this.moveSpeed = moveSpeed;
+
         this.name = name;
         this.productionCost = productionCost;
         this.thumbnail = thumbnail;
+        this.walking_anim = walking_anim;
+        this.attack_anim = attack_anim;
     }
 }
 
 class Character{
 
-    constructor(strength, startPos, index, belongsToPlayer) {
+    constructor(health, dmg, moveSpeed, walking_anim, attack_anim, startPos, index, belongsToPlayer) {
         this.unitWidth = (windowWidth * 0.17);
         this.unitHeight = (windowHeight * 0.21);
 
+        this.health = health;
+        this.strength = dmg;
+        this.speed = moveSpeed;
+
+        this.walking_anim = walking_anim;
+        this.attack_anim = attack_anim;
+
         this.npc = document.createElement('img');
         this.npc.id = "wizard" + counter;
-        this.npc.src = "arrow.gif";
+        this.npc.src = this.walking_anim;
         this.npc.width = this.unitWidth;
         this.npc.height = this.unitHeight;
         if (belongsToPlayer == false) {
             this.npc.style.left = (startPos - this.unitWidth) + "px";
+            this.CharacterXOffSet = startPos - this.unitWidth;
         }
         else {
             this.npc.style.left = startPos + "px";
+            this.CharacterXOffSet = startPos;
         }
         this.npc.style.top = (windowHeight*0.70) + "px";
 
         this.index = index;
         this.unitIsAlive = true;
-        this.strength = strength;
-        this.CharacterXOffSet = startPos - this.unitWidth;
+        //this.CharacterXOffSet = startPos - this.unitWidth;
         this.BelongsToPlayer = belongsToPlayer;
-        this.speed = 10;
         this.nextMove = 0;
         document.body.appendChild(this.npc);
     }
@@ -122,8 +135,9 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex) {
     return false;
 }
 
-function ProductionElement(type, thumbnail, totalTime) {
-            this.type = type
+function ProductionElement(type, thumbnail, totalTime, overwrite) {
+    this.type = type
+    this.overwrite = overwrite;
             this.thumbnail = thumbnail;
             this.Character = null;
             this.timeLeft = totalTime;
@@ -131,9 +145,9 @@ function ProductionElement(type, thumbnail, totalTime) {
         }
 //alert("Starting");
 
-var unitLongsword = new CharacterTemplate("Longsword Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
-var unitArcher = new CharacterTemplate("Archer", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
-var unitPolearm = new CharacterTemplate("Polearm Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
+var unitLongsword = new CharacterTemplate(100,5,10,"arrow.gif", "arrow.gif", "Longsword Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
+var unitArcher = new CharacterTemplate(100, 5, 200,"archer.gif", "archer.gif", "Archer", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
+var unitPolearm = new CharacterTemplate(100, 5, 10,"arrow.gif", "arrow.gif", "Polearm Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
 
 var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
 var productionQueue = [5];
@@ -278,6 +292,7 @@ function makeUpgradeElement(imgSrc, xOffSetBtn, yOffSetBtn, type, index) {
         }
 
 function selectProduction(type, index) {
+    var upgradeReletivePrice = 100;
             //note that types are:
             //1 = unit, 2 = speedUpgrade, 3 = dmgUpgrade
             if (productionEndSpot == isProducing && isProducingSmth == true) {
@@ -290,19 +305,29 @@ function selectProduction(type, index) {
             {
                 case 1://unit
                     {
-                        productionQueue[productionEndSpot] = new ProductionElement(1, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].productionCost);
-                        productionQueue[productionEndSpot].Unit = unitsAvailable[index - 1].thumbnail;
+                        productionQueue[productionEndSpot] = new ProductionElement(1, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].productionCost, index-1);
+                        productionQueue[productionEndSpot].Character = unitsAvailable[index - 1];
                         addToProduction(productionEndSpot);
                         break;
                     }
                 case 2://speed
                     {
-                        alert("upgrade speed for unit:" + index);
+                        productionQueue[productionEndSpot] = new ProductionElement(2, unitsAvailable[0].thumbnail, upgradeReletivePrice, index - 1);
+                        var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].walking_anim, unitsAvailable[index - 1].attack_anim, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail);
+                        upgrade.moveSpeed -= 190;
+
+                        productionQueue[productionEndSpot].Character = upgrade;
+                        addToProduction(productionEndSpot);
                         break;
                     }
                 case 3://dmg
                     {
-                        alert("upgrade damage for unit:" + index);
+                        productionQueue[productionEndSpot] = new ProductionElement(2, unitsAvailable[0].thumbnail, upgradeReletivePrice, index - 1);
+                        var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].walking_anim, unitsAvailable[index - 1].attack_anim, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail);
+                        upgrade.dmg += 100;
+
+                        productionQueue[productionEndSpot].Character = upgrade;
+                        addToProduction(productionEndSpot);
                         break;
                     }
             }
@@ -347,7 +372,7 @@ function manageProduction() {
     if (AIisProducingSmth) {
         AIproduction.timeLeft--;
         if (AIproduction.timeLeft == 0) {
-            add_mem(windowWidth, false);
+            add_mem(AIproduction.Character, windowWidth, false);
             AIisProducingSmth = false;
         }
     }
@@ -356,7 +381,17 @@ function manageProduction() {
             productionQueue[isProducing].timeLeft = productionQueue[isProducing].timeLeft - 1;
             if ((productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) == 0) {
                 productuinBarProgress.style.width = "0%";
-                add_mem(0, true);
+                //manage the different things that could be produced
+                if (productionQueue[isProducing].type == 1) {
+                    add_mem(unitsAvailable[productionQueue[isProducing].overwrite], 0, true);
+                }
+                else if (productionQueue[isProducing].type == 2) {
+                    //add_mem(productionQueue[isProducing].Character, 0, true);
+                    
+                    unitsAvailable[productionQueue[isProducing].overwrite] = productionQueue[isProducing].Character;
+                }
+                
+                
                 if (isProducing == 4) { isProducing = 0; } else { isProducing++; }//so loops around instead of ordering by array placement
                 if (isProducing == productionEndSpot) {//are there more things in queue?
                     isProducingSmth = false;
@@ -409,17 +444,18 @@ function tick() {
 function manageAITurn() {
     if (AIisProducingSmth == false) {
         AIisProducingSmth = true;
-        AIproduction = new ProductionElement(1, unitsAvailable[0].thumbnail, unitsAvailable[0].productionCost);
+        AIproduction = new ProductionElement(1, unitsAvailable[0].thumbnail, unitsAvailable[0].productionCost, 0);
+        AIproduction.Character = unitsAvailable[0];
     }
 }
 
-function add_mem(position, isPlayers) {
+function add_mem(unit, position, isPlayers) {
     //character[counter] = new Character(100, 0);
 
     if (isPlayers) {
         for (i = 0; i < maxUnitCount; i++) {
             if (playerCharacters[i] == null || playerCharacters[i].unitIsAlive != true) {
-                playerCharacters[i] = new Character(100, position, i, true);
+                playerCharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.walking_anim, unit.attack_anim, position, i, true);
                 break;
             }
         }
@@ -427,7 +463,7 @@ function add_mem(position, isPlayers) {
     else {
         for (i = 0; i < maxUnitCount; i++) {
             if (AICharacters[i] == null || AICharacters[i].unitIsAlive != true) {
-                AICharacters[i] = new Character(100, position, i, false);
+                AICharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.walking_anim, unit.attack_anim, position, i, false);
                 break;
             }
         }
