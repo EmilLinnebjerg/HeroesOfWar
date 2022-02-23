@@ -13,3 +13,7 @@ left: 0px;
   position: absolute;
   top: 500px;
 }
+body
+{
+  cursor: url(cursor_sword.png), pointer;
+}
