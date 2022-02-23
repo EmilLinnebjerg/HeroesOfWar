@@ -5,6 +5,17 @@ let pos = Math.floor(Math.random() * 200);
 let maxUnitCount = 8;
 var playerCharacters = [maxUnitCount];
 var AICharacters = [maxUnitCount];
+var queuedDMG = [];
+var healthDisplayTime = 50;
+
+class damageTemplate {
+    constructor(dmg, dealer, reciver, isPlayers) {
+        this.dmg = dmg;
+        this.dealer = dealer;
+        this.reciver = reciver;
+        this.isPlayers = isPlayers;
+    }
+}
 
 class CharacterTemplate {
     constructor(health, dmg, moveSpeed, walking_anim, attack_anim, name, productionCost, thumbnail) {
@@ -21,11 +32,13 @@ class CharacterTemplate {
 }
 
 class Character{
+    unitIsAlive;
 
     constructor(health, dmg, moveSpeed, walking_anim, attack_anim, startPos, index, belongsToPlayer) {
         this.unitWidth = (windowWidth * 0.17);
         this.unitHeight = (windowHeight * 0.21);
 
+        this.totalHealth = health;
         this.health = health;
         this.strength = dmg;
         this.speed = moveSpeed;
@@ -46,26 +59,41 @@ class Character{
             this.npc.style.left = startPos + "px";
             this.CharacterXOffSet = startPos;
         }
-        this.npc.style.top = (windowHeight*0.70) + "px";
-
+        this.npc.style.top = (windowHeight * 0.70) + "px";
+        
         this.index = index;
         this.unitIsAlive = true;
         //this.CharacterXOffSet = startPos - this.unitWidth;
         this.BelongsToPlayer = belongsToPlayer;
         this.nextMove = 0;
+
         document.body.appendChild(this.npc);
     }
 
-    moveCharacter() {
+    characterBehavior() {
         if (this.nextMove == 0) {
             if (this.BelongsToPlayer) {
                 if (colitionHandler(this.CharacterXOffSet, 10, this.unitWidth, this.index) == false) {
                     this.CharacterXOffSet = this.CharacterXOffSet + 10;
                 }
+                else {
+                    if (queuedDMG.length > 0) {
+                        if (queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
+                            queuedDMG[queuedDMG.length - 1].dmg = this.strength;
+                        }
+                    }
+                }
             }
             if (!this.BelongsToPlayer) {
                 if (colitionHandler(this.CharacterXOffSet, -10, this.unitWidth, this.index) == false) {
                     this.CharacterXOffSet = this.CharacterXOffSet - 10;
+                }
+                else {
+                    if (queuedDMG.length > 0) {
+                        if (!queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
+                            queuedDMG[queuedDMG.length - 1].dmg = this.strength;
+                        }
+                    }
                 }
             }
 
@@ -78,6 +106,14 @@ class Character{
 
     renderUpdate() {
         this.npc.style.left = this.CharacterXOffSet + "px";
+    }
+
+    reciveDamage(amount) {
+        this.health -= amount;
+        if (this.health <= 0) {
+            this.unitIsAlive = false;
+            document.body.removeChild(this.npc);
+        }
     }
 }
 
@@ -92,6 +128,7 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex) {
         for (i = 0; i < maxUnitCount; i++) {
             if (AICharacters[i] != null && AICharacters[i].unitIsAlive == true) {//collision between player units and AI units
                 if (AICharacters[i].CharacterXOffSet <= currentPos + moveBy + imageWidth) {
+                    queuedDMG.push(new damageTemplate(0, myIndex, i, true));
                     return true;
                 }
             }
@@ -116,6 +153,7 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex) {
         for (i = 0; i < maxUnitCount; i++) {
             if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {//collision between AI units and player units
                 if (playerCharacters[i].CharacterXOffSet + imageWidth >= currentPos + moveBy) {
+                    queuedDMG.push(new damageTemplate(0, myIndex, i, false));
                     return true;
                 }
             }
@@ -205,12 +243,14 @@ productuinMenuEdge.style.height = (0.105 * windowHeight) + "px";
 productuinMenuEdge.style.top = 0 + "px";
 productuinMenuEdge.style.left = 0 + "px";
 
-        document.body.appendChild(productuinMenuEdge);
+
+document.body.appendChild(productuinMenuEdge);
         document.body.appendChild(productuinMenuBack);
 
         document.body.appendChild(unit1);
         document.body.appendChild(unit2);
         document.body.appendChild(unit3);
+
 
 function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
     widthBtn = (0.09 * windowWidth);
@@ -412,40 +452,61 @@ function manageProduction() {
             }
         }
 
-function displayLoop() {
-            if (isProducingSmth) {
-                document.body.appendChild(productuinBarProgress)
-            }
-
-            for (i = 0; i <= maxUnitCount; i++) {
-                if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {
-                    playerCharacters[i].renderUpdate();
-                }
-                if (AICharacters[i] != null && AICharacters[i].unitIsAlive == true) {
-                    AICharacters[i].renderUpdate();
-                }
-            }
+function updateTheUnits(unitList) {
+    unitList.forEach((character) => {
+        if (character != null && character.unitIsAlive == true) {
+            character.renderUpdate();
         }
+    })
+}
+
+function updateTheUnitsBehavior(unitList) {
+    unitList.forEach((character) => {
+        if (character != null && character.unitIsAlive == true) {
+            character.characterBehavior();
+        }
+    })
+}
+
+function displayLoop() {
+    if (isProducingSmth) {
+        document.body.appendChild(productuinBarProgress)
+    }
+
+    updateTheUnits(playerCharacters);
+    updateTheUnits(AICharacters);
+}
 
 function tick() {
-            manageProduction();
-            for (i = 0; i <= maxUnitCount; i++) {
-                if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {
-                    playerCharacters[i].moveCharacter();
-                }
-                if (AICharacters[i] != null && AICharacters[i].unitIsAlive == true) {
-                    AICharacters[i].moveCharacter();
-                }
-            }
+    manageProduction();
 
-            manageAITurn();
-        }
+    updateTheUnitsBehavior(playerCharacters);
+    updateTheUnitsBehavior(AICharacters);
+
+    healthDisplayTime--;
+    manageAITurn();
+    manageDamage();
+}
 
 function manageAITurn() {
     if (AIisProducingSmth == false) {
         AIisProducingSmth = true;
         AIproduction = new ProductionElement(1, unitsAvailable[0].thumbnail, unitsAvailable[0].productionCost, 0);
         AIproduction.Character = unitsAvailable[0];
+    }
+}
+
+function manageDamage() {
+    while (queuedDMG.length > 0) {
+        var damageHandled = queuedDMG.pop();
+
+        if (damageHandled.isPlayers) {
+            AICharacters[damageHandled.reciver].reciveDamage(damageHandled.dmg);
+        }
+        if (!damageHandled.isPlayers) {
+            playerCharacters[damageHandled.reciver].reciveDamage(damageHandled.dmg);
+        }
+        
     }
 }
 
