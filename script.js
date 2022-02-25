@@ -396,27 +396,27 @@ function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
             document.body.appendChild(front);
 
             var souce = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
-    makeUpgradeElement(souce, xOffSetBtn, yOffSetBtn + 0.12, 2, index)
-    makeUpgradeElement(souce, xOffSetBtn, yOffSetBtn + 0.18, 3, index)
+    makeUpgradeElement("icon_speed3.png", xOffSetBtn, yOffSetBtn + 0.12, 2, index)
+    makeUpgradeElement("icon_damage3.png", xOffSetBtn, yOffSetBtn + 0.18, 3, index)
         }
 
 function makeUpgradeElement(imgSrc, xOffSetBtn, yOffSetBtn, type, index) {
     widthBtn = (0.09 * windowWidth);
-    heightBtn = (0.04 * windowHeight);
+    heightBtn = (0.05 * windowHeight);
             margin = 5;
 
             var UpgradeImg = document.createElement("img");
             UpgradeImg.src = imgSrc;
-    UpgradeImg.style.width = widthBtn + "px";
+    UpgradeImg.style.width = heightBtn + "px";
     UpgradeImg.style.height = heightBtn + "px";
             UpgradeImg.style.position = "absolute";
     UpgradeImg.style.top = (yOffSetBtn * windowHeight) + margin / 2 + "px";
-    UpgradeImg.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin + "px";
+    UpgradeImg.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin + (widthBtn / 2 - heightBtn/2) +"px";
             UpgradeImg.click;
             UpgradeImg.addEventListener('click', function () { selectProduction(type, index) });
 
             var front = document.createElement('div');
-            front.style.background = "red";
+            front.style.background = "gray";
     front.style.width = widthBtn + "px";
     front.style.height = heightBtn + "px";
             front.style.position = "absolute";
@@ -457,7 +457,7 @@ function selectProduction(type, index) {
                     }
                 case 2://speed
                     {
-                        productionQueue[productionEndSpot] = new ProductionElement(2, unitsAvailable[0].thumbnail, upgradeReletivePrice, index - 1);
+                        productionQueue[productionEndSpot] = new ProductionElement(2, "icon_speed3.png", upgradeReletivePrice, index - 1);
                         var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].walking_anim, unitsAvailable[index - 1].attack_anim, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range);
                         upgrade.moveSpeed -= 190;
                         if(upgrade.moveSpeed <= 10){
@@ -471,7 +471,7 @@ function selectProduction(type, index) {
                     }
                 case 3://dmg
                     {
-                        productionQueue[productionEndSpot] = new ProductionElement(2, unitsAvailable[0].thumbnail, upgradeReletivePrice, index - 1);
+                        productionQueue[productionEndSpot] = new ProductionElement(2, "icon_damage3.png", upgradeReletivePrice, index - 1);
                         var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].walking_anim, unitsAvailable[index - 1].attack_anim, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range);
                         upgrade.dmg += 100;
 
