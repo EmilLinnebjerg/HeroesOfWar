@@ -5,8 +5,62 @@ let pos = Math.floor(Math.random() * 200);
 let maxUnitCount = 8;
 var playerCharacters = [maxUnitCount];
 var AICharacters = [maxUnitCount];
+var Missles = [6];
 var queuedDMG = [];
-var healthDisplayTime = 50;
+var spectadedCharacter;
+var healthDisplayTimer = false;
+
+class missle{
+    constructor(dmg, distance, isPlayers, isInAir, startX, startY, renderOffSetX, renderOffSetY, myIndex) {
+        this.dmg = dmg;
+        this.distance = distance;
+        this.isPlayers = isPlayers;
+        this.isInAir = isInAir;
+        this.renderOffSetX = renderOffSetX;
+        this.startX = startX;
+        this.renderOffSetY = renderOffSetY;
+        this.missleSpeed = 5;
+        this.missleCooldown = 0;
+        this.myIndex = myIndex;
+
+        this.projectile = document.createElement("img");
+        this.projectile.src = "icon_speed3.png";
+        this.projectile.width = 16;
+        this.projectile.height = 16;
+        this.projectile.style.left = startX + renderOffSetX + "px";
+        this.projectile.style.top = startY + renderOffSetY + "px";
+        this.projectile.style.position = "absolute";
+
+        document.body.appendChild(this.projectile);
+        
+    }
+
+    updateMissleTrajectory() {
+        if (this.missleCooldown == 0) {
+            if (!colitionHandler((this.startX + this.renderOffSetX), 5, 16, this.myIndex, 0)) {
+                this.renderOffSetX = this.renderOffSetX + 5;
+                this.missleCooldown = this.missleSpeed;
+            }
+            else {
+                if (queuedDMG[queuedDMG.length - 1].dealer == this.myIndex) {
+                    queuedDMG[queuedDMG.length - 1].dmg = this.dmg;
+                    document.body.removeChild(this.projectile);
+                    this.isInAir = false;
+                }
+            }
+            
+        }
+        else {
+            
+            this.missleCooldown--;
+        }
+
+    }
+
+    renderMissle() {
+        this.projectile.style.left = this.startX + this.renderOffSetX + "px";
+    }
+}
 
 class damageTemplate {
     constructor(dmg, dealer, reciver, isPlayers) {
@@ -14,14 +68,18 @@ class damageTemplate {
         this.dealer = dealer;
         this.reciver = reciver;
         this.isPlayers = isPlayers;
+
     }
+
+    
 }
 
 class CharacterTemplate {
-    constructor(health, dmg, moveSpeed, walking_anim, attack_anim, name, productionCost, thumbnail) {
+    constructor(health, dmg, moveSpeed, walking_anim, attack_anim, name, productionCost, thumbnail, range) {
         this.health = health;
         this.dmg = dmg;
         this.moveSpeed = moveSpeed;
+        this.range = range;
 
         this.name = name;
         this.productionCost = productionCost;
@@ -34,9 +92,13 @@ class CharacterTemplate {
 class Character{
     unitIsAlive;
 
-    constructor(health, dmg, moveSpeed, walking_anim, attack_anim, startPos, index, belongsToPlayer) {
+    constructor(health, dmg, moveSpeed, walking_anim, attack_anim, startPos, index, belongsToPlayer, range) {
         this.unitWidth = (windowWidth * 0.17);
         this.unitHeight = (windowHeight * 0.21);
+        this.CharacterYOffSet = (windowHeight * 0.70);
+        var that = this;
+        this.range = range;
+        this.isWalking = true;
 
         this.totalHealth = health;
         this.health = health;
@@ -59,7 +121,9 @@ class Character{
             this.npc.style.left = startPos + "px";
             this.CharacterXOffSet = startPos;
         }
-        this.npc.style.top = (windowHeight * 0.70) + "px";
+        this.npc.style.top = this.CharacterYOffSet + "px";
+        this.npc.addEventListener("mouseover", function( event ) {spectadedCharacter = that; healthDisplayTimer = true;}, false);
+        this.npc.addEventListener("mouseleave", function( event ) {healthDisplayTimer = false;}, false);
         
         this.index = index;
         this.unitIsAlive = true;
@@ -73,26 +137,52 @@ class Character{
     characterBehavior() {
         if (this.nextMove == 0) {
             if (this.BelongsToPlayer) {
-                if (colitionHandler(this.CharacterXOffSet, 10, this.unitWidth, this.index) == false) {
+                if (colitionHandler(this.CharacterXOffSet, 10, this.unitWidth, this.index, this.range) == false) {
                     this.CharacterXOffSet = this.CharacterXOffSet + 10;
+                    if(!this.isWalking){
+                        this.isWalking = true;
+                        this.npc.src = this.walking_anim;
+                    }
                 }
                 else {
                     if (queuedDMG.length > 0) {
                         if (queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
-                            queuedDMG[queuedDMG.length - 1].dmg = this.strength;
+                            if(this.range == 0){
+                                queuedDMG[queuedDMG.length - 1].dmg = this.strength;
+                            }
+                            else {
+                                for (i = 0; i < Missles.length; i++) {
+                                    if (Missles[i] == null || !Missles[i].isInAir) {
+                                        Missles[i] = new missle(100, this.range, this.BelongsToPlayer, true, this.CharacterXOffSet, this.CharacterYOffSet, this.unitWidth, 50, this.index);
+                                    }
+                                }
+                                queuedDMG.pop();
+                            }
                         }
+                    }
+                    if(this.isWalking){
+                        this.isWalking = false;
+                        this.npc.src = this.attack_anim;
                     }
                 }
             }
             if (!this.BelongsToPlayer) {
-                if (colitionHandler(this.CharacterXOffSet, -10, this.unitWidth, this.index) == false) {
+                if (colitionHandler(this.CharacterXOffSet, -10, this.unitWidth, this.index, this.range) == false) {
                     this.CharacterXOffSet = this.CharacterXOffSet - 10;
+                    if(!this.isWalking){
+                        this.isWalking = true;
+                        this.npc.src = this.walking_anim;
+                    }
                 }
                 else {
                     if (queuedDMG.length > 0) {
                         if (!queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
                             queuedDMG[queuedDMG.length - 1].dmg = this.strength;
                         }
+                    }
+                    if(this.isWalking){
+                        this.isWalking = false;
+                        this.npc.src = this.attack_anim;
                     }
                 }
             }
@@ -106,6 +196,7 @@ class Character{
 
     renderUpdate() {
         this.npc.style.left = this.CharacterXOffSet + "px";
+        
     }
 
     reciveDamage(amount) {
@@ -120,14 +211,14 @@ class Character{
 setInterval(displayLoop, 34);//starts game loop time is in ms
 setInterval(tick, 34);//starts game loop time is in ms
 
-function colitionHandler(currentPos, moveBy, imageWidth, myIndex) {
+function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range) {
     if (moveBy > 0) {//handles players units colition
         if (currentPos + moveBy >= windowWidth - imageWidth) {//check map colition
             return true;
         }
         for (i = 0; i < maxUnitCount; i++) {
             if (AICharacters[i] != null && AICharacters[i].unitIsAlive == true) {//collision between player units and AI units
-                if (AICharacters[i].CharacterXOffSet <= currentPos + moveBy + imageWidth) {
+                if (AICharacters[i].CharacterXOffSet <= currentPos + moveBy + imageWidth + range) {
                     queuedDMG.push(new damageTemplate(0, myIndex, i, true));
                     return true;
                 }
@@ -152,7 +243,7 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex) {
 
         for (i = 0; i < maxUnitCount; i++) {
             if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {//collision between AI units and player units
-                if (playerCharacters[i].CharacterXOffSet + imageWidth >= currentPos + moveBy) {
+                if (playerCharacters[i].CharacterXOffSet + imageWidth >= currentPos + moveBy - range) {
                     queuedDMG.push(new damageTemplate(0, myIndex, i, false));
                     return true;
                 }
@@ -183,9 +274,9 @@ function ProductionElement(type, thumbnail, totalTime, overwrite) {
         }
 //alert("Starting");
 
-var unitLongsword = new CharacterTemplate(100,5,10,"arrow.gif", "arrow.gif", "Longsword Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
-var unitArcher = new CharacterTemplate(100, 5, 200,"archer.gif", "archer.gif", "Archer", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
-var unitPolearm = new CharacterTemplate(100, 5, 10,"arrow.gif", "arrow.gif", "Polearm Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg");
+var unitLongsword = new CharacterTemplate(100,5,10,"arrow.gif", "arrow.gif", "Longsword Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg", 0);
+var unitArcher = new CharacterTemplate(100, 5, 200,"archer.gif", "archer.gif", "Archer", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg", 0);
+var unitPolearm = new CharacterTemplate(100, 5, 10,"arrow.gif", "arrow.gif", "Polearm Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg", 100);
 
 var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
 var productionQueue = [5];
@@ -243,6 +334,20 @@ productuinMenuEdge.style.height = (0.105 * windowHeight) + "px";
 productuinMenuEdge.style.top = 0 + "px";
 productuinMenuEdge.style.left = 0 + "px";
 
+let pBar = document.createElement('div');
+pBar.classList.add ("w3-blue");
+pBar.style.height = 10 + "px";
+pBar.style.width = 40 + "px";
+pBar.style.position = "absolute";
+
+function displayHealth(){
+    document.body.appendChild(pBar);
+    pBar.style.width = (spectadedCharacter.health/spectadedCharacter.totalHealth)*0.10*windowWidth + "px";
+    pBar.style.left = spectadedCharacter.CharacterXOffSet + "px";
+    pBar.style.top = spectadedCharacter.npc.style.top;
+
+    
+}
 
 document.body.appendChild(productuinMenuEdge);
         document.body.appendChild(productuinMenuBack);
@@ -353,8 +458,12 @@ function selectProduction(type, index) {
                 case 2://speed
                     {
                         productionQueue[productionEndSpot] = new ProductionElement(2, unitsAvailable[0].thumbnail, upgradeReletivePrice, index - 1);
-                        var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].walking_anim, unitsAvailable[index - 1].attack_anim, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail);
+                        var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].walking_anim, unitsAvailable[index - 1].attack_anim, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range);
                         upgrade.moveSpeed -= 190;
+                        if(upgrade.moveSpeed <= 10){
+                            upgrade.moveSpeed = 10;
+                            //TODO deny upgrades ================================================================================
+                        }
 
                         productionQueue[productionEndSpot].Character = upgrade;
                         addToProduction(productionEndSpot);
@@ -363,7 +472,7 @@ function selectProduction(type, index) {
                 case 3://dmg
                     {
                         productionQueue[productionEndSpot] = new ProductionElement(2, unitsAvailable[0].thumbnail, upgradeReletivePrice, index - 1);
-                        var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].walking_anim, unitsAvailable[index - 1].attack_anim, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail);
+                        var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].walking_anim, unitsAvailable[index - 1].attack_anim, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range);
                         upgrade.dmg += 100;
 
                         productionQueue[productionEndSpot].Character = upgrade;
@@ -468,13 +577,37 @@ function updateTheUnitsBehavior(unitList) {
     })
 }
 
+function updateMissles() {
+    Missles.forEach((Missle) => {
+        if (Missle != null && Missle.isInAir == true) {
+            Missle.renderMissle();
+        }
+    })
+}
+
+function updateMissleBehavior() {
+    Missles.forEach((Missle) => {
+        if (Missle != null && Missle.isInAir == true) {
+            Missle.updateMissleTrajectory();
+        }
+    })
+}
+
 function displayLoop() {
     if (isProducingSmth) {
         document.body.appendChild(productuinBarProgress)
     }
 
+    if(healthDisplayTimer){
+        displayHealth();
+    }
+    else{
+        pBar.style.width = 0;
+    }
+    
     updateTheUnits(playerCharacters);
     updateTheUnits(AICharacters);
+    updateMissles();
 }
 
 function tick() {
@@ -483,9 +616,10 @@ function tick() {
     updateTheUnitsBehavior(playerCharacters);
     updateTheUnitsBehavior(AICharacters);
 
-    healthDisplayTime--;
     manageAITurn();
     manageDamage();
+
+    updateMissleBehavior();
 }
 
 function manageAITurn() {
@@ -516,7 +650,7 @@ function add_mem(unit, position, isPlayers) {
     if (isPlayers) {
         for (i = 0; i < maxUnitCount; i++) {
             if (playerCharacters[i] == null || playerCharacters[i].unitIsAlive != true) {
-                playerCharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.walking_anim, unit.attack_anim, position, i, true);
+                playerCharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.walking_anim, unit.attack_anim, position, i, true, unit.range);
                 break;
             }
         }
@@ -524,7 +658,7 @@ function add_mem(unit, position, isPlayers) {
     else {
         for (i = 0; i < maxUnitCount; i++) {
             if (AICharacters[i] == null || AICharacters[i].unitIsAlive != true) {
-                AICharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.walking_anim, unit.attack_anim, position, i, false);
+                AICharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.walking_anim, unit.attack_anim, position, i, false, unit.range);
                 break;
             }
         }
