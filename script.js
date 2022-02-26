@@ -213,7 +213,7 @@ setInterval(tick, 34);//starts game loop time is in ms
 
 function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range) {
     if (moveBy > 0) {//handles players units colition
-        if (currentPos + moveBy >= windowWidth - imageWidth) {//check map colition.
+        if (currentPos + moveBy >= windowWidth - imageWidth) {//check map colition
             return true;
         }
         for (i = 0; i < maxUnitCount; i++) {
@@ -265,8 +265,8 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range) {
 }
 
 function ProductionElement(type, thumbnail, totalTime, overwrite) {
-    this.type = type
-    this.overwrite = overwrite;
+            this.type = type
+            this.overwrite = overwrite;
             this.thumbnail = thumbnail;
             this.Character = null;
             this.timeLeft = totalTime;
@@ -638,8 +638,9 @@ function tick() {
 function manageAITurn() {
     if (AIisProducingSmth == false) {
         AIisProducingSmth = true;
-        AIproduction = new ProductionElement(1, unitsAvailable[0].thumbnail, unitsAvailable[0].productionCost, 0);
-        AIproduction.Character = unitsAvailable[0];
+        unitSelector = Math.floor(Math.random()*3);
+        AIproduction = new ProductionElement(1, unitsAvailable[unitSelector].thumbnail, unitsAvailable[unitSelector].productionCost, 0);
+        AIproduction.Character = unitsAvailable[unitSelector];
     }
 }
 
