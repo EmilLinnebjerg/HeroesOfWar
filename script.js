@@ -213,7 +213,7 @@ setInterval(tick, 34);//starts game loop time is in ms
 
 function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range) {
     if (moveBy > 0) {//handles players units colition
-        if (currentPos + moveBy >= windowWidth - imageWidth) {//check map colition
+        if (currentPos + moveBy >= windowWidth - imageWidth) {//check map colition.
             return true;
         }
         for (i = 0; i < maxUnitCount; i++) {
