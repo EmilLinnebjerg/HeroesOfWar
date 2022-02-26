@@ -287,30 +287,30 @@ var isProducing = 0;
 var isProducingSmth = false;
 var AIisProducingSmth = false;
 
-        var background1 = document.createElement("img");
-        background1.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
-        background1.style.position = "absolute";
-        background1.style.width = windowWidth + "px";
-        background1.style.height = windowHeight + "px";
-        background1.style.top = 0 + "px";
-        background1.style.left = 0 + "px";
-        document.body.appendChild(background1);
-        //background1.click;
-        //background1.addEventListener('click', function () {alert("now")});
+var background1 = document.createElement("img");
+background1.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
+background1.style.position = "absolute";
+background1.style.width = windowWidth + "px";
+background1.style.height = windowHeight + "px";
+background1.style.top = 0 + "px";
+background1.style.left = 0 + "px";
+document.body.appendChild(background1);
+//background1.click;
+//background1.addEventListener('click', function () {alert("now")});
 
-        var unit1 = document.createElement("img");
-        var unit2 = document.createElement("img");
-        var unit3 = document.createElement("img");
-        unit1.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
-        unit2.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
-        unit3.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
+var unit1 = document.createElement("img");
+var unit2 = document.createElement("img");
+var unit3 = document.createElement("img");
+unit1.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
+unit2.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
+unit3.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
 
-        createAUnitBuildElement(unit1, "unit1", 0.803, 1);
-        createAUnitBuildElement(unit2, "unit2", 0.703, 2);
-        createAUnitBuildElement(unit3, "unit3", 0.603, 3);
+createAUnitBuildElement(unit1, "unit1", 0.803, 1);
+createAUnitBuildElement(unit2, "unit2", 0.703, 2);
+createAUnitBuildElement(unit3, "unit3", 0.603, 3);
 
-        var productuinBarProgress = document.createElement('div');
-        productuinBarProgress.style.background = "white";
+var productuinBarProgress = document.createElement('div');
+productuinBarProgress.style.background = "white";
 productuinBarProgress.style.width = (0.40 * windowWidth)/5 + "px";
 productuinBarProgress.style.height = (0.10 * windowHeight) + "px";
         productuinBarProgress.style.position = "absolute";
@@ -351,7 +351,6 @@ function displayHealth(){
 
 document.body.appendChild(productuinMenuEdge);
         document.body.appendChild(productuinMenuBack);
-
         document.body.appendChild(unit1);
         document.body.appendChild(unit2);
         document.body.appendChild(unit3);
@@ -441,11 +440,13 @@ function selectProduction(type, index) {
             //note that types are:
             //1 = unit, 2 = speedUpgrade, 3 = dmgUpgrade
             if (productionEndSpot == isProducing && isProducingSmth == true) {
-                alert("tell player no more queue");
+                //alert("tell player no more queue");
+
                 return;
             }
 
             isProducingSmth = true;
+            document.body.style = "cursor: url(cursor_sword.png), pointer";
             switch (type)
             {
                 case 1://unit
@@ -594,6 +595,18 @@ function updateMissleBehavior() {
 }
 
 function displayLoop() {
+    if (productionEndSpot == isProducing && isProducingSmth == true) {
+        //alert("tell player no more queue");
+        unit1.style.cursor ='not-allowed';
+        unit2.style.cursor ='not-allowed';
+        unit3.style.cursor ='not-allowed';
+        return;
+    }
+    else{
+        unit1.style.cursor = "url(cursor_sword.png), pointer";
+        unit2.style.cursor = "url(cursor_sword.png), pointer";
+        unit3.style.cursor = "url(cursor_sword.png), pointer";
+    }
     if (isProducingSmth) {
         document.body.appendChild(productuinBarProgress)
     }
