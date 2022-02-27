@@ -5,7 +5,8 @@ let pos = Math.floor(Math.random() * 200);
 let maxUnitCount = 8;
 var playerCharacters = [maxUnitCount];
 var AICharacters = [maxUnitCount];
-var Missles = [6];
+var maxMissleCount = 8;
+var Missles = [maxMissleCount];
 var queuedDMG = [];
 var spectadedCharacter;
 var healthDisplayTimer = false;
@@ -99,6 +100,8 @@ class Character{
         var that = this;
         this.range = range;
         this.isWalking = true;
+        this.rateOfFire = 6;//multiplies action rate so. Given action rate is 3 this will make the shooting rate 3*3=9tiks
+        this.nextShot = 0;
 
         this.totalHealth = health;
         this.health = health;
@@ -152,11 +155,22 @@ class Character{
                                 queuedDMG[queuedDMG.length - 1].dmg = this.strength;
                             }
                             else {
-                                for (i = 0; i < Missles.length; i++) {
-                                    if (Missles[i] == null || !Missles[i].isInAir) {
-                                        Missles[i] = new missle(100, this.range, this.BelongsToPlayer, true, this.CharacterXOffSet, this.CharacterYOffSet, this.unitWidth, 50, this.index);
+                                if (this.nextShot == 0) {
+                                    console.log("shooting...");
+                                    for (i = 0; i < maxMissleCount; i++) {
+                                        console.log(i);
+                                        if (Missles[i] == null || Missles[i].isInAir != true) {
+                                            console.log("found spot");
+                                            Missles[i] = new missle(100, this.range, this.BelongsToPlayer, true, this.CharacterXOffSet, this.CharacterYOffSet, this.unitWidth, 50, this.index);
+                                            break;
+                                        }
                                     }
+                                    this.nextShot = this.rateOfFire;
                                 }
+                                else {
+                                    this.nextShot--;
+                                }
+
                                 queuedDMG.pop();
                             }
                         }
