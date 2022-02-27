@@ -12,6 +12,8 @@ var spectadedCharacter;
 var healthDisplayTimer = false;
 
 class missle{
+    cutoff = (windowHeight * 0.21) + (windowHeight * 0.70) - 16;
+
     constructor(dmg, distance, isPlayers, isInAir, startX, startY, renderOffSetX, renderOffSetY, myIndex) {
         this.dmg = dmg;
         this.distance = distance;
@@ -19,7 +21,7 @@ class missle{
         this.isInAir = isInAir;
         this.renderOffSetX = renderOffSetX;
         this.startX = startX;
-        this.renderOffSetY = renderOffSetY;
+        this.renderOffSetY = startY + renderOffSetY;
         this.missleSpeed = 5;
         this.missleCooldown = 0;
         this.myIndex = myIndex;
@@ -29,7 +31,10 @@ class missle{
         this.projectile.width = 16;
         this.projectile.height = 16;
         this.projectile.style.left = startX + renderOffSetX + "px";
-        this.projectile.style.top = startY + renderOffSetY + "px";
+        if (!this.isPlayers) {
+            this.projectile.style.left = startX + "px";
+        }
+        this.projectile.style.top = this.renderOffSetY + "px";
         this.projectile.style.position = "absolute";
 
         document.body.appendChild(this.projectile);
@@ -37,29 +42,71 @@ class missle{
     }
 
     updateMissleTrajectory() {
-        if (this.missleCooldown == 0) {
-            if (!colitionHandler((this.startX + this.renderOffSetX), 5, 16, this.myIndex, 0)) {
-                this.renderOffSetX = this.renderOffSetX + 5;
-                this.missleCooldown = this.missleSpeed;
-            }
-            else {
-                if (queuedDMG[queuedDMG.length - 1].dealer == this.myIndex) {
-                    queuedDMG[queuedDMG.length - 1].dmg = this.dmg;
-                    document.body.removeChild(this.projectile);
-                    this.isInAir = false;
+        if (this.cutoff < this.renderOffSetY) {
+            document.body.removeChild(this.projectile);
+            this.isInAir = false;
+            return;
+        }
+
+
+        if (this.isPlayers) {
+            if (this.missleCooldown == 0) {
+                if (!colitionHandler((this.startX + this.renderOffSetX), 5, 16, this.myIndex, 0)) {
+                    this.startX = this.startX + 5;
+                    this.renderOffSetY = this.renderOffSetY + 0.6;
+                    this.missleCooldown = this.missleSpeed;
+                }
+                else {
+                    if (queuedDMG.length > 0 && queuedDMG[queuedDMG.length - 1].dealer == this.myIndex) {
+                        queuedDMG[queuedDMG.length - 1].dmg = this.dmg;
+                        document.body.removeChild(this.projectile);
+                        this.isInAir = false;
+                    }
+                    else {
+                        document.body.removeChild(this.projectile);
+                        this.isInAir = false;
+                    }
                 }
             }
-            
+            else {
+                this.missleCooldown--;
+            }
         }
-        else {
-            
-            this.missleCooldown--;
+
+        if (!this.isPlayers) {
+            if (this.missleCooldown == 0) {
+                if (!colitionHandler(this.startX, -5, 60, this.myIndex, 0)) {//TODO use unit standard size or pass a hitbox
+                    this.startX = this.startX - 5;
+                    this.renderOffSetY = this.renderOffSetY + 0.6;
+                    this.missleCooldown = this.missleSpeed;
+                }
+                else {
+                    if (queuedDMG.length > 0 && queuedDMG[queuedDMG.length - 1].dealer == this.myIndex) {
+                        queuedDMG[queuedDMG.length - 1].dmg = this.dmg;
+                        document.body.removeChild(this.projectile);
+                        this.isInAir = false;
+                    }
+                    else {
+                        document.body.removeChild(this.projectile);
+                        this.isInAir = false;
+                    }
+                }
+            }
+            else {
+                this.missleCooldown--;
+            }
         }
 
     }
 
     renderMissle() {
-        this.projectile.style.left = this.startX + this.renderOffSetX + "px";
+        this.projectile.style.top = this.renderOffSetY + "px";
+        if (this.isPlayers) {
+            this.projectile.style.left = this.startX + this.renderOffSetX + "px";
+        }
+        else {
+            this.projectile.style.left = this.startX + "px";
+        }
     }
 }
 
@@ -156,12 +203,9 @@ class Character{
                             }
                             else {
                                 if (this.nextShot == 0) {
-                                    console.log("shooting...");
                                     for (i = 0; i < maxMissleCount; i++) {
-                                        console.log(i);
                                         if (Missles[i] == null || Missles[i].isInAir != true) {
-                                            console.log("found spot");
-                                            Missles[i] = new missle(100, this.range, this.BelongsToPlayer, true, this.CharacterXOffSet, this.CharacterYOffSet, this.unitWidth, 50, this.index);
+                                            Missles[i] = new missle(this.strength, this.range, this.BelongsToPlayer, true, this.CharacterXOffSet, this.CharacterYOffSet, this.unitWidth, 50, this.index);
                                             break;
                                         }
                                     }
@@ -170,7 +214,6 @@ class Character{
                                 else {
                                     this.nextShot--;
                                 }
-
                                 queuedDMG.pop();
                             }
                         }
@@ -192,7 +235,24 @@ class Character{
                 else {
                     if (queuedDMG.length > 0) {
                         if (!queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
-                            queuedDMG[queuedDMG.length - 1].dmg = this.strength;
+                            if (this.range == 0) {
+                                queuedDMG[queuedDMG.length - 1].dmg = this.strength;
+                            }
+                            else {
+                                if (this.nextShot == 0) {
+                                    for (i = 0; i < maxMissleCount; i++) {
+                                        if (Missles[i] == null || Missles[i].isInAir != true) {
+                                            Missles[i] = new missle(this.strength, this.range, this.BelongsToPlayer, true, this.CharacterXOffSet, this.CharacterYOffSet, this.unitWidth, 50, this.index);
+                                            break;
+                                        }
+                                    }
+                                    this.nextShot = this.rateOfFire;
+                                }
+                                else {
+                                    this.nextShot--;
+                                }
+                                queuedDMG.pop();
+                            }
                         }
                     }
                     if(this.isWalking){
@@ -290,7 +350,7 @@ function ProductionElement(type, thumbnail, totalTime, overwrite) {
 //alert("Starting");
 
 var unitLongsword = new CharacterTemplate(100,5,10,"arrow.gif", "arrow.gif", "Longsword Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg", 0);
-var unitArcher = new CharacterTemplate(100, 5, 200,"archer.gif", "archer.gif", "Archer", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg", 0);
+var unitArcher = new CharacterTemplate(100, 50, 30,"archer.gif", "archer.gif", "Archer", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg", 0);
 var unitPolearm = new CharacterTemplate(100, 5, 10,"arrow.gif", "arrow.gif", "Polearm Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg", 100);
 
 var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
