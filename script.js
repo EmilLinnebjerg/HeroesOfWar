@@ -115,6 +115,7 @@ class Character{
         this.npc.height = this.unitHeight;
         if (belongsToPlayer == false) {
             this.npc.style.left = (startPos - this.unitWidth) + "px";
+            this.npc.style.transform = "scaleX(-1)";
             this.CharacterXOffSet = startPos - this.unitWidth;
         }
         else {
