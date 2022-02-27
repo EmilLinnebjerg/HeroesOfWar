@@ -660,7 +660,6 @@ function manageDamage() {
 }
 
 function add_mem(unit, position, isPlayers) {
-    //character[counter] = new Character(100, 0);
 
     if (isPlayers) {
         for (i = 0; i < maxUnitCount; i++) {
