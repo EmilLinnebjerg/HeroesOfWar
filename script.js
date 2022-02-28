@@ -282,7 +282,6 @@ class Character{
         }
     }
 }
-
 setInterval(displayLoop, 34);//starts game loop time is in ms
 setInterval(tick, 34);//starts game loop time is in ms
 
@@ -361,7 +360,6 @@ var productionEndSpot = 0;//Watch this on game reset
 var isProducing = 0;
 var isProducingSmth = false;
 var AIisProducingSmth = false;
-
 var background1 = document.createElement("img");
 background1.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
 background1.style.position = "absolute";
@@ -372,7 +370,9 @@ background1.style.left = 0 + "px";
 document.body.appendChild(background1);
 //background1.click;
 //background1.addEventListener('click', function () {alert("now")});
-
+document.getElementById("bm");
+bm.loop = true;
+bm.play();
 var unit1 = document.createElement("img");
 var unit2 = document.createElement("img");
 var unit3 = document.createElement("img");
@@ -444,7 +444,7 @@ function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
     btn.style.top = (yOffSetBtn * windowHeight) + margin  + "px";
     btn.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin  + "px";
             btn.click;
-            btn.addEventListener('click', function () { selectProduction(1, index) });
+            btn.addEventListener('click', function () { document.getElementById("click"); click.play(); selectProduction(1, index) });
 
             var namef = name + "back";
             var front = document.createElement('div');
