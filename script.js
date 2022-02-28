@@ -27,7 +27,7 @@ class missle{
         this.myIndex = myIndex;
 
         this.projectile = document.createElement("img");
-        this.projectile.src = "icon_speed3.png";
+        this.projectile.src = "Arrow.png";
         this.projectile.width = 16;
         this.projectile.height = 16;
         this.projectile.style.left = startX + renderOffSetX + "px";
@@ -36,6 +36,10 @@ class missle{
         }
         this.projectile.style.top = this.renderOffSetY + "px";
         this.projectile.style.position = "absolute";
+
+        if (isPlayers == false) {
+            this.projectile.style.transform = "scaleX(-1)";
+        }
 
         document.body.appendChild(this.projectile);
         
@@ -361,7 +365,7 @@ var isProducing = 0;
 var isProducingSmth = false;
 var AIisProducingSmth = false;
 var background1 = document.createElement("img");
-background1.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
+background1.src = "foreground 1000x500.png";
 background1.style.position = "absolute";
 background1.style.width = windowWidth + "px";
 background1.style.height = windowHeight + "px";
