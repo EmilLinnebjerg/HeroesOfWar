@@ -352,9 +352,9 @@ function ProductionElement(type, thumbnail, totalTime, overwrite) {
         }
 //alert("Starting");
 
-var unitLongsword = new CharacterTemplate(100,5,10,"arrow.gif", "arrow.gif", "Longsword Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg", 0);
-var unitArcher = new CharacterTemplate(100, 50, 30,"archer.gif", "archer.gif", "Archer", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg", 0);
-var unitPolearm = new CharacterTemplate(100, 5, 10,"arrow.gif", "arrow.gif", "Polearm Knight", 100, "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg", 100);
+var unitLongsword = new CharacterTemplate(100, 5, 10, "arrow.gif", "arrow.gif", "Longsword Knight", 100, "rome.png", 0);
+var unitArcher = new CharacterTemplate(100, 50, 30, "archer.gif", "archer.gif", "Archer", 100, "archer.png", 0);
+var unitPolearm = new CharacterTemplate(100, 5, 10, "arrow.gif", "arrow.gif", "Polearm Knight", 100, "rome.png", 100);
 
 var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
 var productionQueue = [5];
@@ -380,9 +380,9 @@ bm.play();
 var unit1 = document.createElement("img");
 var unit2 = document.createElement("img");
 var unit3 = document.createElement("img");
-unit1.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
-unit2.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
-unit3.src = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
+unit1.src = "rome.png";
+unit2.src = "archer.png";
+unit3.src = "rome.png";
 
 createAUnitBuildElement(unit1, "unit1", 0.803, 1);
 createAUnitBuildElement(unit2, "unit2", 0.703, 2);
@@ -453,7 +453,7 @@ function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
             var namef = name + "back";
             var front = document.createElement('div');
             front.className = namef;
-            front.style.background = "red";
+            front.style.background = "gray";
     front.style.width = widthBtn + "px";
     front.style.height = heightBtn + "px";
             front.style.position = "absolute";
