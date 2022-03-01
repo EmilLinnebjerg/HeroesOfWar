@@ -1,0 +1,818 @@
+const windowWidth = 850;
+const windowHeight = 500;
+let counter = 0;
+let pos = Math.floor(Math.random() * 200);
+let maxUnitCount = 8;
+var playerCharacters = [maxUnitCount];
+var AICharacters = [maxUnitCount];
+var maxMissleCount = 8;
+var Missles = [maxMissleCount];
+var queuedDMG = [];
+var spectadedCharacter;
+var healthDisplayTimer = false;
+
+class missle{
+    cutoff = (windowHeight * 0.21) + (windowHeight * 0.70) - 16;
+
+    constructor(dmg, distance, isPlayers, isInAir, startX, startY, renderOffSetX, renderOffSetY, myIndex) {
+        this.dmg = dmg;
+        this.distance = distance;
+        this.isPlayers = isPlayers;
+        this.isInAir = isInAir;
+        this.renderOffSetX = renderOffSetX;
+        this.startX = startX;
+        this.renderOffSetY = startY + renderOffSetY;
+        this.missleSpeed = 5;
+        this.missleCooldown = 0;
+        this.myIndex = myIndex;
+
+        this.projectile = document.createElement("img");
+        this.projectile.src = "Arrow.png";
+        this.projectile.width = 16;
+        this.projectile.height = 16;
+        this.projectile.style.left = startX + renderOffSetX + "px";
+        if (!this.isPlayers) {
+            this.projectile.style.left = startX + "px";
+        }
+        this.projectile.style.top = this.renderOffSetY + "px";
+        this.projectile.style.position = "absolute";
+
+        if (isPlayers == false) {
+            this.projectile.style.transform = "scaleX(-1)";
+        }
+
+        document.body.appendChild(this.projectile);
+        
+    }
+
+    updateMissleTrajectory() {
+        if (this.cutoff < this.renderOffSetY) {
+            document.body.removeChild(this.projectile);
+            this.isInAir = false;
+            return;
+        }
+
+
+        if (this.isPlayers) {
+            if (this.missleCooldown == 0) {
+                if (!colitionHandler((this.startX + this.renderOffSetX), 5, 16, this.myIndex, 0)) {
+                    this.startX = this.startX + 5;
+                    this.renderOffSetY = this.renderOffSetY + 0.6;
+                    this.missleCooldown = this.missleSpeed;
+                }
+                else {
+                    if (queuedDMG.length > 0 && queuedDMG[queuedDMG.length - 1].dealer == this.myIndex) {
+                        queuedDMG[queuedDMG.length - 1].dmg = this.dmg;
+                        document.body.removeChild(this.projectile);
+                        this.isInAir = false;
+                    }
+                    else {
+                        document.body.removeChild(this.projectile);
+                        this.isInAir = false;
+                    }
+                }
+            }
+            else {
+                this.missleCooldown--;
+            }
+        }
+
+        if (!this.isPlayers) {
+            if (this.missleCooldown == 0) {
+                if (!colitionHandler(this.startX, -5, 60, this.myIndex, 0)) {//TODO use unit standard size or pass a hitbox
+                    this.startX = this.startX - 5;
+                    this.renderOffSetY = this.renderOffSetY + 0.6;
+                    this.missleCooldown = this.missleSpeed;
+                }
+                else {
+                    if (queuedDMG.length > 0 && queuedDMG[queuedDMG.length - 1].dealer == this.myIndex) {
+                        queuedDMG[queuedDMG.length - 1].dmg = this.dmg;
+                        document.body.removeChild(this.projectile);
+                        this.isInAir = false;
+                    }
+                    else {
+                        document.body.removeChild(this.projectile);
+                        this.isInAir = false;
+                    }
+                }
+            }
+            else {
+                this.missleCooldown--;
+            }
+        }
+
+    }
+
+    renderMissle() {
+        this.projectile.style.top = this.renderOffSetY + "px";
+        if (this.isPlayers) {
+            this.projectile.style.left = this.startX + this.renderOffSetX + "px";
+        }
+        else {
+            this.projectile.style.left = this.startX + "px";
+        }
+    }
+}
+
+class damageTemplate {
+    constructor(dmg, dealer, reciver, isPlayers) {
+        this.dmg = dmg;
+        this.dealer = dealer;
+        this.reciver = reciver;
+        this.isPlayers = isPlayers;
+
+    }
+
+    
+}
+
+class CharacterTemplate {
+    constructor(health, dmg, moveSpeed, walking_anim, attack_anim, name, productionCost, thumbnail, range) {
+        this.health = health;
+        this.dmg = dmg;
+        this.moveSpeed = moveSpeed;
+        this.range = range;
+
+        this.name = name;
+        this.productionCost = productionCost;
+        this.thumbnail = thumbnail;
+        this.walking_anim = walking_anim;
+        this.attack_anim = attack_anim;
+    }
+}
+
+class Character{
+    unitIsAlive;
+
+    constructor(health, dmg, moveSpeed, walking_anim, attack_anim, startPos, index, belongsToPlayer, range) {
+        this.unitWidth = (windowWidth * 0.17);
+        this.unitHeight = (windowHeight * 0.21);
+        this.CharacterYOffSet = (windowHeight * 0.70);
+        var that = this;
+        this.range = range;
+        this.isWalking = true;
+        this.rateOfFire = 6;//multiplies action rate so. Given action rate is 3 this will make the shooting rate 3*3=9tiks
+        this.nextShot = 0;
+
+        this.totalHealth = health;
+        this.health = health;
+        this.strength = dmg;
+        this.speed = moveSpeed;
+
+        this.walking_anim = walking_anim;
+        this.attack_anim = attack_anim;
+
+        this.npc = document.createElement('img');
+        this.npc.id = "wizard" + counter;
+        this.npc.src = this.walking_anim;
+        this.npc.width = this.unitWidth;
+        this.npc.height = this.unitHeight;
+        if (belongsToPlayer == false) {
+            this.npc.style.left = (startPos - this.unitWidth) + "px";
+            this.npc.style.transform = "scaleX(-1)";
+            this.CharacterXOffSet = startPos - this.unitWidth;
+        }
+        else {
+            this.npc.style.left = startPos + "px";
+            this.CharacterXOffSet = startPos;
+        }
+        this.npc.style.top = this.CharacterYOffSet + "px";
+        this.npc.addEventListener("mouseover", function( event ) {spectadedCharacter = that; healthDisplayTimer = true;}, false);
+        this.npc.addEventListener("mouseleave", function( event ) {healthDisplayTimer = false;}, false);
+        
+        this.index = index;
+        this.unitIsAlive = true;
+        //this.CharacterXOffSet = startPos - this.unitWidth;
+        this.BelongsToPlayer = belongsToPlayer;
+        this.nextMove = 0;
+
+        document.body.appendChild(this.npc);
+    }
+
+    characterBehavior() {
+        if (this.nextMove == 0) {
+            if (this.BelongsToPlayer) {
+                if (colitionHandler(this.CharacterXOffSet, 10, this.unitWidth, this.index, this.range) == false) {
+                    this.CharacterXOffSet = this.CharacterXOffSet + 10;
+                    if(!this.isWalking){
+                        this.isWalking = true;
+                        this.npc.src = this.walking_anim;
+                    }
+                }
+                else {
+                    if (queuedDMG.length > 0) {
+                        if (queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
+                            if(this.range == 0){
+                                queuedDMG[queuedDMG.length - 1].dmg = this.strength;
+                            }
+                            else {
+                                if (this.nextShot == 0) {
+                                    for (i = 0; i < maxMissleCount; i++) {
+                                        if (Missles[i] == null || Missles[i].isInAir != true) {
+                                            Missles[i] = new missle(this.strength, this.range, this.BelongsToPlayer, true, this.CharacterXOffSet, this.CharacterYOffSet, this.unitWidth, 50, this.index);
+                                            break;
+                                        }
+                                    }
+                                    this.nextShot = this.rateOfFire;
+                                }
+                                else {
+                                    this.nextShot--;
+                                }
+                                queuedDMG.pop();
+                            }
+                        }
+                    }
+                    if(this.isWalking){
+                        this.isWalking = false;
+                        this.npc.src = this.attack_anim;
+                    }
+                }
+            }
+            if (!this.BelongsToPlayer) {
+                if (colitionHandler(this.CharacterXOffSet, -10, this.unitWidth, this.index, this.range) == false) {
+                    this.CharacterXOffSet = this.CharacterXOffSet - 10;
+                    if(!this.isWalking){
+                        this.isWalking = true;
+                        this.npc.src = this.walking_anim;
+                    }
+                }
+                else {
+                    if (queuedDMG.length > 0) {
+                        if (!queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
+                            if (this.range == 0) {
+                                queuedDMG[queuedDMG.length - 1].dmg = this.strength;
+                            }
+                            else {
+                                if (this.nextShot == 0) {
+                                    for (i = 0; i < maxMissleCount; i++) {
+                                        if (Missles[i] == null || Missles[i].isInAir != true) {
+                                            Missles[i] = new missle(this.strength, this.range, this.BelongsToPlayer, true, this.CharacterXOffSet, this.CharacterYOffSet, this.unitWidth, 50, this.index);
+                                            break;
+                                        }
+                                    }
+                                    this.nextShot = this.rateOfFire;
+                                }
+                                else {
+                                    this.nextShot--;
+                                }
+                                queuedDMG.pop();
+                            }
+                        }
+                    }
+                    if(this.isWalking){
+                        this.isWalking = false;
+                        this.npc.src = this.attack_anim;
+                    }
+                }
+            }
+
+            this.nextMove = this.speed;
+        }
+        else {
+            this.nextMove--;
+        }
+    }
+
+    renderUpdate() {
+        this.npc.style.left = this.CharacterXOffSet + "px";
+        
+    }
+
+    reciveDamage(amount) {
+        this.health -= amount;
+        if (this.health <= 0) {
+            this.unitIsAlive = false;
+            document.body.removeChild(this.npc);
+        }
+    }
+}
+document.getElementById('mnuStart').addEventListener("mouseover", function(event){event.target.style.opacity = "100%"});
+document.getElementById('mnuStart').addEventListener("mouseleave", function(event){event.target.style.opacity = "60%"});
+function startGame(){
+menuDiv = document.getElementById('menuDiv');
+document.getElementById("bm");
+bm.loop = true;
+bm.play();
+menuDiv.style.visibility = "hidden";
+setInterval(displayLoop, 34);//starts game loop time is in ms
+setInterval(tick, 34);//starts game loop time is in ms
+}
+function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range) {
+    if (moveBy > 0) {//handles players units colition
+        if (currentPos + moveBy >= windowWidth - imageWidth) {//check map colition
+            return true;
+        }
+        for (i = 0; i < maxUnitCount; i++) {
+            if (AICharacters[i] != null && AICharacters[i].unitIsAlive == true) {//collision between player units and AI units
+                if (AICharacters[i].CharacterXOffSet <= currentPos + moveBy + imageWidth + range) {
+                    queuedDMG.push(new damageTemplate(0, myIndex, i, true));
+                    return true;
+                }
+            }
+
+            if (i == myIndex) {
+                continue;
+            }
+            if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {//collision between player units and player units
+                if (playerCharacters[i].CharacterXOffSet > currentPos) {
+                    if (playerCharacters[i].CharacterXOffSet <= currentPos + moveBy + imageWidth) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    else {//handles AI units colition
+        if (currentPos + moveBy <= 0) {//check map colition
+            return true;
+        }
+
+        for (i = 0; i < maxUnitCount; i++) {
+            if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {//collision between AI units and player units
+                if (playerCharacters[i].CharacterXOffSet + imageWidth >= currentPos + moveBy - range) {
+                    queuedDMG.push(new damageTemplate(0, myIndex, i, false));
+                    return true;
+                }
+            }
+
+            if (i == myIndex) {
+                continue;
+            }
+            if (AICharacters[i] != null && AICharacters[i].unitIsAlive == true) {//collision between player units and player units
+                if (AICharacters[i].CharacterXOffSet < currentPos) {
+                    if (AICharacters[i].CharacterXOffSet + imageWidth >= currentPos + moveBy) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+function ProductionElement(type, thumbnail, totalTime, overwrite) {
+            this.type = type
+            this.overwrite = overwrite;
+            this.thumbnail = thumbnail;
+            this.Character = null;
+            this.timeLeft = totalTime;
+            this.totalTime = totalTime;
+        }
+//alert("Starting");
+var unitLongsword = new CharacterTemplate(100, 5, 10, "arrow.gif", "arrow.gif", "Longsword Knight", 100, "rome.png", 0);
+var unitArcher = new CharacterTemplate(100, 50, 30, "archer.gif", "archer.gif", "Archer", 100, "archer.png", 0);
+var unitPolearm = new CharacterTemplate(100, 5, 10, "arrow.gif", "arrow.gif", "Polearm Knight", 100, "rome.png", 100);
+
+var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
+var productionQueue = [5];
+var AIproduction;
+
+var productionEndSpot = 0;//Watch this on game reset
+var isProducing = 0;
+var isProducingSmth = false;
+var AIisProducingSmth = false;
+var background1 = document.createElement("img");
+background1.src = "foreground 1000x500.png";
+background1.style.position = "absolute";
+background1.style.width = windowWidth + "px";
+background1.style.height = windowHeight + "px";
+background1.style.top = 0 + "px";
+background1.style.left = 0 + "px";
+document.body.appendChild(background1);
+//background1.click;
+//background1.addEventListener('click', function () {alert("now")});
+
+var unit1 = document.createElement("img");
+var unit2 = document.createElement("img");
+var unit3 = document.createElement("img");
+unit1.src = "rome.png";
+unit2.src = "archer.png";
+unit3.src = "rome.png";
+
+createAUnitBuildElement(unit1, "unit1", 0.803, 1);
+createAUnitBuildElement(unit2, "unit2", 0.703, 2);
+createAUnitBuildElement(unit3, "unit3", 0.603, 3);
+
+var productuinBarProgress = document.createElement('div');
+productuinBarProgress.style.background = "white";
+productuinBarProgress.style.width = (0.40 * windowWidth)/5 + "px";
+productuinBarProgress.style.height = (0.10 * windowHeight) + "px";
+        productuinBarProgress.style.position = "absolute";
+productuinBarProgress.style.top = 0 + "px";
+productuinBarProgress.style.left = 0 + "px";
+        productuinBarProgress.style.opacity = "0.5";
+
+        var productuinMenuBack = document.createElement('div');
+        productuinMenuBack.style.background = "gray";
+productuinMenuBack.style.width = (0.40 * windowWidth) + "px";
+productuinMenuBack.style.height = (0.10 * windowHeight) + "px";
+        productuinMenuBack.style.position = "absolute";
+productuinMenuBack.style.top = 0 + "px";
+productuinMenuBack.style.left = 0 + "px";
+
+        var productuinMenuEdge = document.createElement('div');
+        productuinMenuEdge.style.background = "black";
+productuinMenuEdge.style.width = (0.404 * windowWidth) + "px";
+productuinMenuEdge.style.height = (0.105 * windowHeight) + "px";
+        productuinMenuEdge.style.position = "absolute";
+productuinMenuEdge.style.top = 0 + "px";
+productuinMenuEdge.style.left = 0 + "px";
+
+let pBar = document.createElement('div');
+pBar.classList.add ("w3-blue");
+pBar.style.height = 10 + "px";
+pBar.style.width = 40 + "px";
+pBar.style.position = "absolute";
+
+function displayHealth(){
+    document.body.appendChild(pBar);
+    pBar.style.width = (spectadedCharacter.health/spectadedCharacter.totalHealth)*0.10*windowWidth + "px";
+    pBar.style.left = spectadedCharacter.CharacterXOffSet + "px";
+    pBar.style.top = spectadedCharacter.npc.style.top;
+
+    
+}
+
+document.body.appendChild(productuinMenuEdge);
+        document.body.appendChild(productuinMenuBack);
+        document.body.appendChild(unit1);
+        document.body.appendChild(unit2);
+        document.body.appendChild(unit3);
+
+
+function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
+    widthBtn = (0.09 * windowWidth);
+    heightBtn = (0.10 * windowHeight);
+            margin = 5;
+            yOffSetBtn = 0.01;
+
+            btn.className = name;
+    btn.style.width = widthBtn + "px";
+    btn.style.height = heightBtn + "px";
+    btn.style.position = "absolute";
+    btn.style.top = (yOffSetBtn * windowHeight) + margin  + "px";
+    btn.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin  + "px";
+            btn.click;
+            btn.addEventListener('click', function () { document.getElementById("click"); click.play(); selectProduction(1, index) });
+
+            var namef = name + "back";
+            var front = document.createElement('div');
+            front.className = namef;
+            front.style.background = "gray";
+    front.style.width = widthBtn + "px";
+    front.style.height = heightBtn + "px";
+            front.style.position = "absolute";
+    front.style.top = (yOffSetBtn * windowHeight) + margin  + "px";
+    front.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin + "px";
+
+            var nameb = name + "back";
+            var back = document.createElement('div');
+            back.className = nameb;
+            back.style.background = "black";
+    back.style.width = widthBtn + margin + "px";
+    back.style.height = heightBtn + margin + "px";
+            back.style.position = "absolute";
+    back.style.top = (yOffSetBtn * windowHeight) + margin / 2 + "px";
+    back.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin / 2 + "px";
+
+            document.body.appendChild(back);
+            document.body.appendChild(front);
+
+            var souce = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
+    makeUpgradeElement("icon_speed3.png", xOffSetBtn, yOffSetBtn + 0.12, 2, index)
+    makeUpgradeElement("icon_damage3.png", xOffSetBtn, yOffSetBtn + 0.18, 3, index)
+        }
+
+function makeUpgradeElement(imgSrc, xOffSetBtn, yOffSetBtn, type, index) {
+    widthBtn = (0.09 * windowWidth);
+    heightBtn = (0.05 * windowHeight);
+            margin = 5;
+
+            var UpgradeImg = document.createElement("img");
+            UpgradeImg.src = imgSrc;
+    UpgradeImg.style.width = heightBtn + "px";
+    UpgradeImg.style.height = heightBtn + "px";
+            UpgradeImg.style.position = "absolute";
+    UpgradeImg.style.top = (yOffSetBtn * windowHeight) + margin / 2 + "px";
+    UpgradeImg.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin + (widthBtn / 2 - heightBtn/2) +"px";
+            UpgradeImg.click;
+            UpgradeImg.addEventListener('click', function () { selectProduction(type, index) });
+
+            var front = document.createElement('div');
+            front.style.background = "gray";
+    front.style.width = widthBtn + "px";
+    front.style.height = heightBtn + "px";
+            front.style.position = "absolute";
+    front.style.top = (yOffSetBtn * windowHeight) + margin / 2 + "px";
+    front.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin + "px";
+
+            var back = document.createElement('div');
+            back.style.background = "black";
+    back.style.width = widthBtn + margin + "px";
+    back.style.height = heightBtn + margin + "px";
+            back.style.position = "absolute";
+    back.style.top = (yOffSetBtn * windowHeight) + "px";
+    back.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin / 2 + "px";
+
+            document.body.appendChild(back);
+            document.body.appendChild(front);
+            document.body.appendChild(UpgradeImg);
+        }
+
+function selectProduction(type, index) {
+    var upgradeReletivePrice = 100;
+            //note that types are:
+            //1 = unit, 2 = speedUpgrade, 3 = dmgUpgrade
+            if (productionEndSpot == isProducing && isProducingSmth == true) {
+                //alert("tell player no more queue");
+
+                return;
+            }
+
+            isProducingSmth = true;
+            document.body.style = "cursor: url(cursor_sword.png), pointer";
+            switch (type)
+            {
+                case 1://unit
+                    {
+                        productionQueue[productionEndSpot] = new ProductionElement(1, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].productionCost, index-1);
+                        productionQueue[productionEndSpot].Character = unitsAvailable[index - 1];
+                        addToProduction(productionEndSpot);
+                        break;
+                    }
+                case 2://speed
+                    {
+                        productionQueue[productionEndSpot] = new ProductionElement(2, "icon_speed3.png", upgradeReletivePrice, index - 1);
+                        var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].walking_anim, unitsAvailable[index - 1].attack_anim, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range);
+                        upgrade.moveSpeed -= 190;
+                        if(upgrade.moveSpeed <= 10){
+                            upgrade.moveSpeed = 10;
+                            //TODO deny upgrades ================================================================================
+                        }
+
+                        productionQueue[productionEndSpot].Character = upgrade;
+                        addToProduction(productionEndSpot);
+                        break;
+                    }
+                case 3://dmg
+                    {
+                        productionQueue[productionEndSpot] = new ProductionElement(2, "icon_damage3.png", upgradeReletivePrice, index - 1);
+                        var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].walking_anim, unitsAvailable[index - 1].attack_anim, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range);
+                        upgrade.dmg += 100;
+
+                        productionQueue[productionEndSpot].Character = upgrade;
+                        addToProduction(productionEndSpot);
+                        break;
+                    }
+            }
+            if (productionEndSpot == 4) {
+                productionEndSpot = 0;
+            }
+            else {
+                productionEndSpot++;
+            }
+        }
+
+function addToProduction(num) {
+    xQueueOffSet = getMyPositionInQueue(num) * (0.40 * windowWidth) / 5;
+
+            var productuinMenuBack = document.createElement('img');
+            productuinMenuBack.src = productionQueue[num].thumbnail;
+    productuinMenuBack.style.width = (0.40 * windowWidth) / 5 + "px";
+    productuinMenuBack.style.height = (0.10 * windowHeight) + "px";
+            productuinMenuBack.style.position = "absolute";
+    productuinMenuBack.style.top = 0 + "px";
+    productuinMenuBack.style.left = 0 + xQueueOffSet + "px";
+
+            document.body.appendChild(productuinMenuBack);
+
+        }
+
+function getMyPositionInQueue(num) {
+            if (isProducing < productionEndSpot) {
+                return num - isProducing;
+            }
+            else {
+                if (num >= isProducing) {
+                    return num - isProducing;
+                }
+                else {
+                    return (5 - isProducing) + num;
+                }
+            }
+        }
+
+function manageProduction() {
+    if (AIisProducingSmth) {
+        AIproduction.timeLeft--;
+        if (AIproduction.timeLeft == 0) {
+            add_mem(AIproduction.Character, windowWidth, false);
+            AIisProducingSmth = false;
+        }
+    }
+    if (!isProducingSmth) { return;}
+    productuinBarProgress.style.width = ((0.0203 * windowWidth) / 5) * (productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) + "%";
+            productionQueue[isProducing].timeLeft = productionQueue[isProducing].timeLeft - 1;
+            if ((productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) == 0) {
+                productuinBarProgress.style.width = "0%";
+                //manage the different things that could be produced
+                if (productionQueue[isProducing].type == 1) {
+                    add_mem(unitsAvailable[productionQueue[isProducing].overwrite], 0, true);
+                }
+                else if (productionQueue[isProducing].type == 2) {
+                    //add_mem(productionQueue[isProducing].Character, 0, true);
+                    
+                    unitsAvailable[productionQueue[isProducing].overwrite] = productionQueue[isProducing].Character;
+                }
+                
+                
+                if (isProducing == 4) { isProducing = 0; } else { isProducing++; }//so loops around instead of ordering by array placement
+                if (isProducing == productionEndSpot) {//are there more things in queue?
+                    isProducingSmth = false;
+                }
+
+                document.body.appendChild(productuinMenuBack);
+                for (var i = isProducing; i != productionEndSpot;) {
+                    addToProduction(i);
+
+                    if (i == 4) {
+                        i = 0
+                    }
+                    else {
+                        i++;
+                    }
+                }
+
+            }
+        }
+
+function updateTheUnits(unitList) {
+    unitList.forEach((character) => {
+        if (character != null && character.unitIsAlive == true) {
+            character.renderUpdate();
+        }
+    })
+}
+
+function updateTheUnitsBehavior(unitList) {
+    unitList.forEach((character) => {
+        if (character != null && character.unitIsAlive == true) {
+            character.characterBehavior();
+        }
+    })
+}
+
+function updateMissles() {
+    Missles.forEach((Missle) => {
+        if (Missle != null && Missle.isInAir == true) {
+            Missle.renderMissle();
+        }
+    })
+}
+
+function updateMissleBehavior() {
+    Missles.forEach((Missle) => {
+        if (Missle != null && Missle.isInAir == true) {
+            Missle.updateMissleTrajectory();
+        }
+    })
+}
+
+function displayLoop() {
+    if (productionEndSpot == isProducing && isProducingSmth == true) {
+        //alert("tell player no more queue");
+        unit1.style.cursor ='not-allowed';
+        unit2.style.cursor ='not-allowed';
+        unit3.style.cursor ='not-allowed';
+        return;
+    }
+    else{
+        unit1.style.cursor = "url(cursor_sword.png), pointer";
+        unit2.style.cursor = "url(cursor_sword.png), pointer";
+        unit3.style.cursor = "url(cursor_sword.png), pointer";
+    }
+    if (isProducingSmth) {
+        document.body.appendChild(productuinBarProgress)
+    }
+
+    if(healthDisplayTimer){
+        displayHealth();
+    }
+    else{
+        pBar.style.width = 0;
+    }
+    
+    updateTheUnits(playerCharacters);
+    updateTheUnits(AICharacters);
+    updateMissles();
+}
+
+function tick() {
+    manageProduction();
+
+    updateTheUnitsBehavior(playerCharacters);
+    updateTheUnitsBehavior(AICharacters);
+
+    manageAITurn();
+    manageDamage();
+
+    updateMissleBehavior();
+}
+
+function manageAITurn() {
+    if (AIisProducingSmth == false) {
+        AIisProducingSmth = true;
+        unitSelector = Math.floor(Math.random()*3);
+        AIproduction = new ProductionElement(1, unitsAvailable[unitSelector].thumbnail, unitsAvailable[unitSelector].productionCost, 0);
+        AIproduction.Character = unitsAvailable[unitSelector];
+    }
+}
+
+function manageDamage() {
+    while (queuedDMG.length > 0) {
+        var damageHandled = queuedDMG.pop();
+
+        if (damageHandled.isPlayers) {
+            AICharacters[damageHandled.reciver].reciveDamage(damageHandled.dmg);
+        }
+        if (!damageHandled.isPlayers) {
+            playerCharacters[damageHandled.reciver].reciveDamage(damageHandled.dmg);
+        }
+        
+    }
+}
+
+function add_mem(unit, position, isPlayers) {
+
+    if (isPlayers) {
+        for (i = 0; i < maxUnitCount; i++) {
+            if (playerCharacters[i] == null || playerCharacters[i].unitIsAlive != true) {
+                playerCharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.walking_anim, unit.attack_anim, position, i, true, unit.range);
+                break;
+            }
+        }
+    }
+    else {
+        for (i = 0; i < maxUnitCount; i++) {
+            if (AICharacters[i] == null || AICharacters[i].unitIsAlive != true) {
+                AICharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.walking_anim, unit.attack_anim, position, i, false, unit.range);
+                break;
+            }
+        }
+    }
+
+
+  /*let playDiv = document.getElementById('playboard');
+  playDiv.appendChild(character[counter].wiz);
+  let container = document.createElement('div');
+  container.style.width = 113 + "px";
+  let pBar = document.createElement('div');
+  pBar.id="myBar"+counter;
+  pBar.classList.add ("w3-blue");
+  pBar.style.height = 24 + "px";
+  pBar.style.width = character[counter].strength + "%";
+  container.style.position = 'relative';
+  container.style.left = pos + 60 + "px";
+  container.style.top = 200 + "px";
+  playDiv.style.zIndex = 40;
+  container.appendChild(pBar);
+  playDiv.appendChild(container);
+
+
+  decay(counter);*/
+  counter++;
+}
+
+function add_wiz(){
+  let playDiv = document.getElementById('playboard');
+  let wiz = document.createElement('img');
+  wiz.src = "archer.gif";
+  wiz.style.zIndex = 50;
+  wiz.style.top = 200 + "px";
+  playDiv.appendChild(wiz);
+  window.setInterval(()=>{wiz.style.left = pos + "px";
+  pos = Math.floor(Math.random()*200);}, 500)
+}
+
+function decay(x){
+  let progress =  document.getElementById('myBar' + x);
+  let i=100;
+  let aliveFlag = true;
+  window.setInterval(()=>{ 
+  progress.style.width = i +"%";  
+  if(aliveFlag==false) 
+  {
+    //document.getElementById("wizard"+x).src=''; 
+    let playDiv = document.getElementById('playboard');
+    wiz = document.getElementById('wizard'+x);
+    playDiv.removeChild(wiz);
+  }
+  else{
+    if(i>=0)
+  i = i-10;
+else
+aliveFlag = false;} 
+},800);
+wiz = document.getElementById('wizard'+x);
+console.log(wiz);
+}
