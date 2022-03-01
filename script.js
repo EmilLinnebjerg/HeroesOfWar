@@ -287,8 +287,6 @@ class Character{
         }
     }
 }
-setInterval(displayLoop, 34);//starts game loop time is in ms
-setInterval(tick, 34);//starts game loop time is in ms
 
 function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range) {
     if (moveBy > 0) {//handles players units colition
@@ -343,6 +341,21 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range) {
         }
     }
     return false;
+}
+
+document.getElementById('mnuStart').addEventListener("mouseover", function (event) { event.target.style.opacity = "100%" });
+document.getElementById('mnuStart').addEventListener("mouseleave", function (event) { event.target.style.opacity = "60%" });
+function startGame() {
+    menuDiv = document.getElementById('menuDiv');
+    document.getElementById("bm");
+    bm.loop = true;
+    bm.play();
+    menuDiv.style.visibility = "hidden";
+
+
+    setInterval(displayLoop, 34);//starts game loop time is in ms
+    setInterval(tick, 34);//starts game loop time is in ms
+
 }
 
 function ProductionElement(type, thumbnail, totalTime, overwrite) {

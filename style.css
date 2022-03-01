@@ -6,12 +6,17 @@ left: 0px;
 }
 #backgroud
 {
-  z-index: 80;
+  z-index: 1;
 }
-#test
+#menuBack
 {
-  position: absolute;
-  top: 500px;
+  z-index: 2;
+}
+#mnuStart
+{
+  left : 250px;
+  top: 100px;  
+  opacity: 60%;
 }
 body
 {
