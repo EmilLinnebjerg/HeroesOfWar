@@ -1,5 +1,3 @@
-const windowWidth = 850;
-const windowHeight = 500;
 let counter = 0;
 let pos = Math.floor(Math.random() * 200);
 let maxUnitCount = 8;
@@ -728,6 +726,7 @@ function tick() {
     manageDamage();
 
     updateMissleBehavior();
+    animateClouds();
 }
 
 function manageAITurn() {

@@ -1,4 +1,26 @@
 const animationStages = 3;
+const windowWidth = 850;
+const windowHeight = 500;
+var shift1 = 0;
+var shift2 = 0-windowWidth;
+
+var clouds1 = document.createElement("img");
+clouds1.src = "Clouds.png";
+clouds1.style.position = "absolute";
+clouds1.style.width = windowWidth + "px";
+clouds1.style.height = windowHeight + "px";
+clouds1.style.top = 0 + "px";
+clouds1.style.left = 0 + "px";
+document.body.appendChild(clouds1);
+
+var clouds2 = document.createElement("img");
+clouds2.src = "Clouds.png";
+clouds2.style.position = "absolute";
+clouds2.style.width = windowWidth + "px";
+clouds2.style.height = windowHeight + "px";
+clouds2.style.top = 0 + "px";
+clouds2.style.left = 0 + "px";
+document.body.appendChild(clouds2);
 
 class animation {
     constructor(walk1, walk2, walk3, attack1, attack2, attack3, idle) {
@@ -47,5 +69,20 @@ class animation {
             }
             return this.attack1;
         }
+    }
+}
+
+function animateClouds() {
+    shift1 += 1 /5;
+    shift2 += 1 /5;
+    clouds1.style.left = shift1 + "px";
+
+    clouds2.style.left = shift2 + "px";
+
+    if (shift1 >= windowWidth) {
+        shift1 = 0 - windowWidth;
+    }
+    if (shift2 >= windowWidth) {
+        shift2 = 0 - windowWidth;
     }
 }
