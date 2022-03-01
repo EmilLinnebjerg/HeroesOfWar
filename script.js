@@ -8,6 +8,8 @@ var Missles = [maxMissleCount];
 var queuedDMG = [];
 var spectadedCharacter;
 var healthDisplayTimer = false;
+var AIHealthOffSet = windowHeight * 0.55;
+var PlayerHealthOffSet = windowHeight * 0.55;
 
 class missle{
     cutoff = (windowHeight * 0.21) + (windowHeight * 0.70) - 16;
@@ -113,15 +115,15 @@ class missle{
 }
 
 class damageTemplate {
-    constructor(dmg, dealer, reciver, isPlayers) {
+    constructor(dmg, dealer, reciver, isPlayers, baseDamage) {
         this.dmg = dmg;
         this.dealer = dealer;
         this.reciver = reciver;
         this.isPlayers = isPlayers;
+        this.baseDamage = baseDamage;
 
     }
 
-    
 }
 
 class CharacterTemplate {
@@ -290,13 +292,14 @@ setInterval(tick, 34);//starts game loop time is in ms
 
 function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range) {
     if (moveBy > 0) {//handles players units colition
-        if (currentPos + moveBy >= windowWidth - imageWidth) {//check map colition
+        if (currentPos + moveBy >= windowWidth - imageWidth - (windowWidth*0.04)) {//check map colition
+            queuedDMG.push(new damageTemplate(0, myIndex, i, false, true));
             return true;
         }
         for (i = 0; i < maxUnitCount; i++) {
             if (AICharacters[i] != null && AICharacters[i].unitIsAlive == true) {//collision between player units and AI units
                 if (AICharacters[i].CharacterXOffSet <= currentPos + moveBy + imageWidth + range) {
-                    queuedDMG.push(new damageTemplate(0, myIndex, i, true));
+                    queuedDMG.push(new damageTemplate(0, myIndex, i, true, false));
                     return true;
                 }
             }
@@ -314,14 +317,15 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range) {
         }
     }
     else {//handles AI units colition
-        if (currentPos + moveBy <= 0) {//check map colition
+        if (currentPos + moveBy <= (windowWidth * 0.04)) {//check map colition
+            queuedDMG.push(new damageTemplate(0, myIndex, i, false, true));
             return true;
         }
 
         for (i = 0; i < maxUnitCount; i++) {
             if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {//collision between AI units and player units
                 if (playerCharacters[i].CharacterXOffSet + imageWidth >= currentPos + moveBy - range) {
-                    queuedDMG.push(new damageTemplate(0, myIndex, i, false));
+                    queuedDMG.push(new damageTemplate(0, myIndex, i, false, false));
                     return true;
                 }
             }
@@ -351,11 +355,11 @@ function ProductionElement(type, thumbnail, totalTime, overwrite) {
         }
 //alert("Starting");
 
-var unitLongsword = new CharacterTemplate(100, 5, 20, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
+var unitLongsword = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
     "Longsword Knight", 300, "rome.png", 0);
-var unitArcher = new CharacterTemplate(100, 50, 20, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
+var unitArcher = new CharacterTemplate(100, 50, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
     "Archer", 300, "archer.png", 0);
-var unitPolearm = new CharacterTemplate(100, 5, 20, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
+var unitPolearm = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
     "Polearm Knight", 300, "rome.png", 100);
 
 var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
@@ -383,6 +387,45 @@ background2.style.height = windowHeight + "px";
 background2.style.top = 0 + "px";
 background2.style.left = 0 + "px";
 document.body.appendChild(background2);
+
+var healthBarAI = document.createElement("div");
+var healthBarPlayer = document.createElement("div");
+
+makeAHealthBar(0.95, healthBarAI);
+makeAHealthBar(0.03, healthBarPlayer);
+
+function makeAHealthBar(barLeft, barElement) {
+    var barWidth = 0.02;
+    var barHeight = 0.55;
+    var barTop = 0.28;
+    var edge = 4;
+
+    var backHealthBar = document.createElement("div");
+    backHealthBar.style.background = "black";
+    backHealthBar.style.position = "absolute";
+    backHealthBar.style.width = windowWidth * barWidth + edge + "px";
+    backHealthBar.style.height = windowHeight * barHeight + edge + "px";
+    backHealthBar.style.top = windowHeight * barTop - edge/2 + "px";
+    backHealthBar.style.left = windowWidth * barLeft - edge/2 + "px";
+    document.body.appendChild(backHealthBar);
+
+    var edgeHealthBar = document.createElement("div");
+    edgeHealthBar.style.background = "gray";
+    edgeHealthBar.style.position = "absolute";
+    edgeHealthBar.style.width = windowWidth * barWidth + "px";
+    edgeHealthBar.style.height = windowHeight * barHeight + "px";
+    edgeHealthBar.style.top = windowHeight * barTop + "px";
+    edgeHealthBar.style.left = windowWidth * barLeft + "px";
+    document.body.appendChild(edgeHealthBar);
+
+    barElement.style.background = "lightblue";
+    barElement.style.position = "absolute";
+    barElement.style.width = windowWidth * barWidth + "px";
+    barElement.style.height = windowHeight * barHeight + "px";
+    barElement.style.top = windowHeight * barTop + "px";
+    barElement.style.left = windowWidth * barLeft + "px";
+    document.body.appendChild(barElement);
+}
 
 //background1.click;
 //background1.addEventListener('click', function () {alert("now")});
@@ -714,6 +757,10 @@ function displayLoop() {
     updateTheUnits(AICharacters);
     updateMissles();
 
+    healthBarAI.style.height = AIHealthOffSet + "px";
+    healthBarAI.style.top = (windowHeight * 0.28) + ((windowHeight * 0.55) - AIHealthOffSet) + "px";
+    healthBarPlayer.style.height = PlayerHealthOffSet + "px";
+    healthBarPlayer.style.top = (windowHeight * 0.28) + ((windowHeight * 0.55) - PlayerHealthOffSet) + "px";
 }
 
 function tick() {
@@ -743,9 +790,21 @@ function manageDamage() {
         var damageHandled = queuedDMG.pop();
 
         if (damageHandled.isPlayers) {
+            if (damageHandled.baseDamage) {
+                AIHealthOffSet -= damageHandled.dmg;
+                if (AIHealthOffSet < 0) {
+                    gameOver(true);
+                }
+            }
             AICharacters[damageHandled.reciver].reciveDamage(damageHandled.dmg);
         }
         if (!damageHandled.isPlayers) {
+            if (damageHandled.baseDamage) {
+                PlayerHealthOffSet -= damageHandled.dmg;
+                if (PlayerHealthOffSet < 0) {
+                    gameOver(false);
+                }
+            }
             playerCharacters[damageHandled.reciver].reciveDamage(damageHandled.dmg);
         }
         
@@ -825,4 +884,8 @@ aliveFlag = false;}
 },800);
 wiz = document.getElementById('wizard'+x);
 console.log(wiz);
+}
+
+function gameOver(playerWon) {
+    alert("game done implement something");
 }
