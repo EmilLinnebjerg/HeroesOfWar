@@ -28,7 +28,7 @@ class missle{
 
         this.projectile = document.createElement("img");
         this.projectile.src = "Arrow.png";
-        this.projectile.width = 16;
+        this.projectile.width = 32;
         this.projectile.height = 16;
         this.projectile.style.left = startX + renderOffSetX + "px";
         if (!this.isPlayers) {
@@ -127,7 +127,7 @@ class damageTemplate {
 }
 
 class CharacterTemplate {
-    constructor(health, dmg, moveSpeed, walking_anim, attack_anim, name, productionCost, thumbnail, range) {
+    constructor(health, dmg, moveSpeed, animations, name, productionCost, thumbnail, range) {
         this.health = health;
         this.dmg = dmg;
         this.moveSpeed = moveSpeed;
@@ -136,17 +136,16 @@ class CharacterTemplate {
         this.name = name;
         this.productionCost = productionCost;
         this.thumbnail = thumbnail;
-        this.walking_anim = walking_anim;
-        this.attack_anim = attack_anim;
+        this.animations = animations;
     }
 }
 
 class Character{
     unitIsAlive;
 
-    constructor(health, dmg, moveSpeed, walking_anim, attack_anim, startPos, index, belongsToPlayer, range) {
-        this.unitWidth = (windowWidth * 0.17);
-        this.unitHeight = (windowHeight * 0.21);
+    constructor(health, dmg, moveSpeed, animations, startPos, index, belongsToPlayer, range) {
+        this.unitWidth = (windowWidth * 0.12);
+        this.unitHeight = (windowHeight * 0.17);
         this.CharacterYOffSet = (windowHeight * 0.70);
         var that = this;
         this.range = range;
@@ -157,14 +156,14 @@ class Character{
         this.totalHealth = health;
         this.health = health;
         this.strength = dmg;
-        this.speed = moveSpeed;
+        this.speed = moveSpeed * animationStages;
 
-        this.walking_anim = walking_anim;
-        this.attack_anim = attack_anim;
+        this.myAnimations = animations;
+        this.idlePos = false;
 
         this.npc = document.createElement('img');
         this.npc.id = "wizard" + counter;
-        this.npc.src = this.walking_anim;
+        this.npc.src = animations.walk1;
         this.npc.width = this.unitWidth;
         this.npc.height = this.unitHeight;
         if (belongsToPlayer == false) {
@@ -190,19 +189,21 @@ class Character{
     }
 
     characterBehavior() {
+        this.idlePos = false;
+
         if (this.nextMove == 0) {
             if (this.BelongsToPlayer) {
                 if (colitionHandler(this.CharacterXOffSet, 10, this.unitWidth, this.index, this.range) == false) {
                     this.CharacterXOffSet = this.CharacterXOffSet + 10;
                     if(!this.isWalking){
                         this.isWalking = true;
-                        this.npc.src = this.walking_anim;
                     }
                 }
                 else {
+                    this.idlePos = true;
                     if (queuedDMG.length > 0) {
                         if (queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
-                            if(this.range == 0){
+                            if (this.range == 0) {
                                 queuedDMG[queuedDMG.length - 1].dmg = this.strength;
                             }
                             else {
@@ -224,7 +225,6 @@ class Character{
                     }
                     if(this.isWalking){
                         this.isWalking = false;
-                        this.npc.src = this.attack_anim;
                     }
                 }
             }
@@ -233,10 +233,10 @@ class Character{
                     this.CharacterXOffSet = this.CharacterXOffSet - 10;
                     if(!this.isWalking){
                         this.isWalking = true;
-                        this.npc.src = this.walking_anim;
                     }
                 }
                 else {
+                    this.idlePos = true;
                     if (queuedDMG.length > 0) {
                         if (!queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
                             if (this.range == 0) {
@@ -261,7 +261,6 @@ class Character{
                     }
                     if(this.isWalking){
                         this.isWalking = false;
-                        this.npc.src = this.attack_anim;
                     }
                 }
             }
@@ -271,6 +270,8 @@ class Character{
         else {
             this.nextMove--;
         }
+
+        this.npc.src = this.myAnimations.getCurrentAnimation(this.isWalking, this.nextMove, this.speed, this.range, this.nextShot, this.rateOfFire, this.idlePos);
     }
 
     renderUpdate() {
@@ -352,9 +353,12 @@ function ProductionElement(type, thumbnail, totalTime, overwrite) {
         }
 //alert("Starting");
 
-var unitLongsword = new CharacterTemplate(100, 5, 10, "arrow.gif", "arrow.gif", "Longsword Knight", 100, "rome.png", 0);
-var unitArcher = new CharacterTemplate(100, 50, 30, "archer.gif", "archer.gif", "Archer", 100, "archer.png", 0);
-var unitPolearm = new CharacterTemplate(100, 5, 10, "arrow.gif", "arrow.gif", "Polearm Knight", 100, "rome.png", 100);
+var unitLongsword = new CharacterTemplate(100, 5, 20, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
+    "Longsword Knight", 300, "rome.png", 0);
+var unitArcher = new CharacterTemplate(100, 50, 20, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
+    "Archer", 300, "archer.png", 0);
+var unitPolearm = new CharacterTemplate(100, 5, 20, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
+    "Polearm Knight", 300, "rome.png", 100);
 
 var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
 var productionQueue = [5];
@@ -372,6 +376,16 @@ background1.style.height = windowHeight + "px";
 background1.style.top = 0 + "px";
 background1.style.left = 0 + "px";
 document.body.appendChild(background1);
+
+var background2 = document.createElement("img");
+background2.src = "foregroundBridgeOnly.png";
+background2.style.position = "absolute";
+background2.style.width = windowWidth + "px";
+background2.style.height = windowHeight + "px";
+background2.style.top = 0 + "px";
+background2.style.left = 0 + "px";
+document.body.appendChild(background2);
+
 //background1.click;
 //background1.addEventListener('click', function () {alert("now")});
 document.getElementById("bm");
@@ -606,7 +620,7 @@ function manageProduction() {
         }
     }
     if (!isProducingSmth) { return;}
-    productuinBarProgress.style.width = ((0.0203 * windowWidth) / 5) * (productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) + "%";
+    productuinBarProgress.style.width = ((0.40 * windowWidth) / 5) * (productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) + "px";
             productionQueue[isProducing].timeLeft = productionQueue[isProducing].timeLeft - 1;
             if ((productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) == 0) {
                 productuinBarProgress.style.width = "0%";
@@ -674,6 +688,7 @@ function updateMissleBehavior() {
 }
 
 function displayLoop() {
+
     if (productionEndSpot == isProducing && isProducingSmth == true) {
         //alert("tell player no more queue");
         unit1.style.cursor ='not-allowed';
@@ -700,6 +715,7 @@ function displayLoop() {
     updateTheUnits(playerCharacters);
     updateTheUnits(AICharacters);
     updateMissles();
+
 }
 
 function tick() {
@@ -742,7 +758,7 @@ function add_mem(unit, position, isPlayers) {
     if (isPlayers) {
         for (i = 0; i < maxUnitCount; i++) {
             if (playerCharacters[i] == null || playerCharacters[i].unitIsAlive != true) {
-                playerCharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.walking_anim, unit.attack_anim, position, i, true, unit.range);
+                playerCharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.animations, position, i, true, unit.range);
                 break;
             }
         }
@@ -750,7 +766,7 @@ function add_mem(unit, position, isPlayers) {
     else {
         for (i = 0; i < maxUnitCount; i++) {
             if (AICharacters[i] == null || AICharacters[i].unitIsAlive != true) {
-                AICharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.walking_anim, unit.attack_anim, position, i, false, unit.range);
+                AICharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.animations, position, i, false, unit.range);
                 break;
             }
         }
