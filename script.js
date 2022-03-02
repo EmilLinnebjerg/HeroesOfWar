@@ -127,11 +127,12 @@ class damageTemplate {
 }
 
 class CharacterTemplate {
-    constructor(health, dmg, moveSpeed, animations, name, productionCost, thumbnail, range) {
+    constructor(health, dmg, moveSpeed, animations, name, productionCost, thumbnail, range, isWizard) {
         this.health = health;
         this.dmg = dmg;
         this.moveSpeed = moveSpeed;
         this.range = range;
+        this.isWizard = isWizard;
 
         this.name = name;
         this.productionCost = productionCost;
@@ -143,13 +144,14 @@ class CharacterTemplate {
 class Character{
     unitIsAlive;
 
-    constructor(health, dmg, moveSpeed, animations, startPos, index, belongsToPlayer, range) {
+    constructor(health, dmg, moveSpeed, animations, startPos, index, belongsToPlayer, range, isWizard) {
         this.unitWidth = (windowWidth * 0.12);
         this.unitHeight = (windowHeight * 0.17);
         this.CharacterYOffSet = (windowHeight * 0.70);
         var that = this;
         this.range = range;
         this.isWalking = true;
+        this.isWizard = isWizard; //i swear this is such a poopy way of doing it but since we for now only have 3 types its kindaa ok
         this.rateOfFire = 6;//multiplies action rate so. Given action rate is 3 this will make the shooting rate 3*3=9tiks
         this.nextShot = 0;
 
@@ -189,79 +191,53 @@ class Character{
     }
 
     characterBehavior() {
+        var moveby;
+        var renderOffSetXlocal;
+
         this.idlePos = false;
 
         if (this.nextMove == 0) {
             if (this.BelongsToPlayer) {
-                if (colitionHandler(this.CharacterXOffSet, 10, this.unitWidth, this.index, this.range) == false) {
-                    this.CharacterXOffSet = this.CharacterXOffSet + 10;
-                    if(!this.isWalking){
-                        this.isWalking = true;
-                    }
-                }
-                else {
-                    this.idlePos = true;
-                    if (queuedDMG.length > 0) {
-                        if (queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
-                            if (this.range == 0) {
-                                queuedDMG[queuedDMG.length - 1].dmg = this.strength;
-                            }
-                            else {
-                                if (this.nextShot == 0) {
-                                    for (i = 0; i < maxMissleCount; i++) {
-                                        if (Missles[i] == null || Missles[i].isInAir != true) {
-                                            Missles[i] = new missle(this.strength, this.range, this.BelongsToPlayer, true, this.CharacterXOffSet, this.CharacterYOffSet, this.unitWidth, 50, this.index);
-                                            break;
-                                        }
-                                    }
-                                    this.nextShot = this.rateOfFire;
-                                }
-                                else {
-                                    this.nextShot--;
-                                }
-                                queuedDMG.pop();
-                            }
-                        }
-                    }
-                    if(this.isWalking){
-                        this.isWalking = false;
-                    }
-                }
+                moveby = 10;
+                renderOffSetXlocal = 50;
             }
             if (!this.BelongsToPlayer) {
-                if (colitionHandler(this.CharacterXOffSet, -10, this.unitWidth, this.index, this.range) == false) {
-                    this.CharacterXOffSet = this.CharacterXOffSet - 10;
-                    if(!this.isWalking){
-                        this.isWalking = true;
-                    }
+                moveby = -10;
+                renderOffSetXlocal = 50;
+            }
+
+            if (colitionHandler(this.CharacterXOffSet, moveby, this.unitWidth, this.index, this.range) == false) {
+                this.CharacterXOffSet = this.CharacterXOffSet + moveby;//RETURN ON THIS
+                if (!this.isWalking) {
+                    this.isWalking = true;
                 }
-                else {
-                    this.idlePos = true;
-                    if (queuedDMG.length > 0) {
-                        if (!queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
-                            if (this.range == 0) {
-                                queuedDMG[queuedDMG.length - 1].dmg = this.strength;
+            }
+            else {
+                this.idlePos = true;
+                if (queuedDMG.length > 0) {
+                    if (this.BelongsToPlayer == queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
+                        if (this.range == 0) {
+                            queuedDMG[queuedDMG.length - 1].dmg = this.strength;
+                        }
+                        else {
+                            if (this.nextShot == 0) {
+                                for (i = 0; i < maxMissleCount; i++) {
+                                    if (Missles[i] == null || Missles[i].isInAir != true) {
+                                        Missles[i] = new missle(this.strength, this.range, this.BelongsToPlayer, true, this.CharacterXOffSet, this.CharacterYOffSet, this.unitWidth, renderOffSetXlocal, this.index);
+                                        break;
+                                    }
+                                }
+                                this.nextShot = this.rateOfFire;
                             }
                             else {
-                                if (this.nextShot == 0) {
-                                    for (i = 0; i < maxMissleCount; i++) {
-                                        if (Missles[i] == null || Missles[i].isInAir != true) {
-                                            Missles[i] = new missle(this.strength, this.range, this.BelongsToPlayer, true, this.CharacterXOffSet, this.CharacterYOffSet, this.unitWidth, 50, this.index);
-                                            break;
-                                        }
-                                    }
-                                    this.nextShot = this.rateOfFire;
-                                }
-                                else {
-                                    this.nextShot--;
-                                }
-                                queuedDMG.pop();
+                                this.nextShot--;
                             }
+                            queuedDMG.pop();
                         }
                     }
-                    if(this.isWalking){
-                        this.isWalking = false;
-                    }
+                }
+                if (this.isWalking) {
+                    this.isWalking = false;
                 }
             }
 
@@ -369,11 +345,11 @@ function ProductionElement(type, thumbnail, totalTime, overwrite) {
 //alert("Starting");
 
 var unitLongsword = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
-    "Longsword Knight", 300, "rome.png", 0);
+    "Knight", 300, "rome.png", 0, false);
 var unitArcher = new CharacterTemplate(100, 50, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
-    "Archer", 300, "archer.png", 0);
+    "Wizard", 300, "archer.png", 0, true);
 var unitPolearm = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
-    "Polearm Knight", 300, "rome.png", 100);
+    "Archer", 300, "rome.png", 100, false);
 
 var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
 var productionQueue = [5];
@@ -829,7 +805,7 @@ function add_mem(unit, position, isPlayers) {
     if (isPlayers) {
         for (i = 0; i < maxUnitCount; i++) {
             if (playerCharacters[i] == null || playerCharacters[i].unitIsAlive != true) {
-                playerCharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.animations, position, i, true, unit.range);
+                playerCharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.animations, position, i, true, unit.range, unit.isWizard);
                 break;
             }
         }
@@ -837,7 +813,7 @@ function add_mem(unit, position, isPlayers) {
     else {
         for (i = 0; i < maxUnitCount; i++) {
             if (AICharacters[i] == null || AICharacters[i].unitIsAlive != true) {
-                AICharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.animations, position, i, false, unit.range);
+                AICharacters[i] = new Character(unit.health, unit.dmg, unit.moveSpeed, unit.animations, position, i, false, unit.range, unit.isWizard);
                 break;
             }
         }
