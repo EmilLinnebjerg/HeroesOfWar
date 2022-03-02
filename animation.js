@@ -4,6 +4,16 @@ const windowHeight = 500;
 var shift1 = 0;
 var shift2 = 0-windowWidth;
 
+var cloudHider = document.createElement("div");
+cloudHider.style.background = "white";
+cloudHider.style.position = "absolute";
+cloudHider.style.width = windowWidth + "px";
+cloudHider.style.height = windowHeight + "px";
+cloudHider.style.top = 0 + "px";
+cloudHider.style.left = windowWidth + "px";
+cloudHider.style.zIndex = 1;
+document.body.appendChild(cloudHider);
+
 var clouds1 = document.createElement("img");
 clouds1.src = "Clouds.png";
 clouds1.style.position = "absolute";
@@ -73,6 +83,7 @@ class animation {
 }
 
 function animateClouds() {
+
     shift1 += 1 /5;
     shift2 += 1 /5;
     clouds1.style.left = shift1 + "px";
@@ -85,4 +96,5 @@ function animateClouds() {
     if (shift2 >= windowWidth) {
         shift2 = 0 - windowWidth;
     }
+
 }
