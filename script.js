@@ -53,53 +53,40 @@ class missle{
             return;
         }
 
+        var startPosU = (this.startX + this.renderOffSetX);
+        var arrowMove = -5;
 
         if (this.isPlayers) {
-            if (this.missleCooldown == 0) {
-                if (!colitionHandler((this.startX + this.renderOffSetX), 5, 16, this.myIndex, 0, false, false)) {
-                    this.startX = this.startX + 5;
-                    this.renderOffSetY = this.renderOffSetY + 0.6;
-                    this.missleCooldown = this.missleSpeed;
-                }
-                else {
-                    if (queuedDMG.length > 0 && queuedDMG[queuedDMG.length - 1].dealer == this.myIndex) {
-                        queuedDMG[queuedDMG.length - 1].dmg = this.dmg;
-                        document.body.removeChild(this.projectile);
-                        this.isInAir = false;
-                    }
-                    else {
-                        document.body.removeChild(this.projectile);
-                        this.isInAir = false;
-                    }
-                }
-            }
-            else {
-                this.missleCooldown--;
-            }
+            startPosU = (this.startX + this.renderOffSetX);
+            arrowMove = 5;
         }
 
         if (!this.isPlayers) {
-            if (this.missleCooldown == 0) {
-                if (!colitionHandler(this.startX, -5, 60, this.myIndex, 0, false, false)) {//TODO use unit standard size or pass a hitbox
-                    this.startX = this.startX - 5;
-                    this.renderOffSetY = this.renderOffSetY + 0.6;
-                    this.missleCooldown = this.missleSpeed;
-                }
-                else {
-                    if (queuedDMG.length > 0 && queuedDMG[queuedDMG.length - 1].dealer == this.myIndex) {
-                        queuedDMG[queuedDMG.length - 1].dmg = this.dmg;
-                        document.body.removeChild(this.projectile);
-                        this.isInAir = false;
-                    }
-                    else {
-                        document.body.removeChild(this.projectile);
-                        this.isInAir = false;
-                    }
-                }
+            startPosU = this.startX;
+            arrowMove = -5;
+        }
+
+        if (this.missleCooldown == 0) {
+            if (!colitionHandler(startPosU, arrowMove, 16, this.myIndex, 0, false, false)) {
+                this.startX = this.startX + arrowMove;
+                this.renderOffSetY = this.renderOffSetY + 0.4;
+                this.missleCooldown = this.missleSpeed;
             }
             else {
-                this.missleCooldown--;
+                if (queuedDMG.length > 0 && queuedDMG[queuedDMG.length - 1].dealer == this.myIndex) {
+                    queuedDMG[queuedDMG.length - 1].dmg = this.dmg;
+                    document.body.removeChild(this.projectile);
+                    this.isInAir = false;
+                }
+                else {
+                    this.startX = this.startX + arrowMove;
+                    this.renderOffSetY = this.renderOffSetY + 0.4;
+                    this.missleCooldown = this.missleSpeed;
+                }
             }
+        }
+        else {
+            this.missleCooldown--;
         }
 
     }
@@ -288,10 +275,11 @@ class Character{
                         })
                     }
                 }
+                /*
                 if (!this.hasShield) {
                     this.hasShield = true;
                     this.shield = new magicShield(this.BelongsToPlayer, ((this.unitHeight / 3) * 2) * 1.2, this.unitHeight*1.2, this.CharacterYOffSet, this.CharacterXOffSet, this.unitWidth, this.unitHeight, this);
-                }
+                }*/
                 if (unitsToGiveShield.length > 0) {
                     console.log("failsafe on stack 'unitsToGiveShield' clearing stack...");
                     while (unitsToGiveShield.length > 0) { unitsToGiveShield.pop()}
@@ -512,9 +500,17 @@ var unitLongsword = new CharacterTemplate(100, 5, 10, new animation("arrow1.png"
 var unitArcher = new CharacterTemplate(100, 50, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
     "Wizard", 100, "archer.png", 0, true);
 var unitPolearm = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
-    "Archer", 100, "rome.png", 100, false);
+    "Archer", 100, "rome.png", 150, false);
+
+var AIunitLongsword = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
+    "Knight", 100, "rome.png", 0, false);
+var AIunitArcher = new CharacterTemplate(100, 50, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
+    "Wizard", 100, "archer.png", 0, true);
+var AIunitPolearm = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
+    "Archer", 100, "rome.png", 150, false);
 
 var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
+var AIunitsAvailable = [AIunitLongsword, AIunitArcher, AIunitPolearm];
 var productionQueue = [5];
 var AIproduction;
 
@@ -945,6 +941,14 @@ function manageAITurn() {
         unitSelector = Math.floor(Math.random()*3);
         AIproduction = new ProductionElement(1, unitsAvailable[unitSelector].thumbnail, unitsAvailable[unitSelector].productionCost, 0);
         AIproduction.Character = unitsAvailable[unitSelector];
+        /*if(colitionHandler(windowWidth - (windowWidth * 0.12),-10,(windowWidth * 0.12),maxUnitCount+1,0,false,true)){//TODO this aint great
+            
+            return;
+        }
+        else{
+            
+        }*/
+        
     }
 }
 
