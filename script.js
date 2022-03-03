@@ -56,7 +56,7 @@ class missle{
 
         if (this.isPlayers) {
             if (this.missleCooldown == 0) {
-                if (!colitionHandler((this.startX + this.renderOffSetX), 5, 16, this.myIndex, 0, false)) {
+                if (!colitionHandler((this.startX + this.renderOffSetX), 5, 16, this.myIndex, 0, false, false)) {
                     this.startX = this.startX + 5;
                     this.renderOffSetY = this.renderOffSetY + 0.6;
                     this.missleCooldown = this.missleSpeed;
@@ -80,7 +80,7 @@ class missle{
 
         if (!this.isPlayers) {
             if (this.missleCooldown == 0) {
-                if (!colitionHandler(this.startX, -5, 60, this.myIndex, 0, false)) {//TODO use unit standard size or pass a hitbox
+                if (!colitionHandler(this.startX, -5, 60, this.myIndex, 0, false, false)) {//TODO use unit standard size or pass a hitbox
                     this.startX = this.startX - 5;
                     this.renderOffSetY = this.renderOffSetY + 0.6;
                     this.missleCooldown = this.missleSpeed;
@@ -257,8 +257,8 @@ class Character{
                 document.body.removeChild(this.cirkle);
                 this.isMakingAShield = false;
 
-                colitionHandler(this.CharacterXOffSet, this.cirkleMax / 2, this.unitWidth, this.index, this.range, true);
-                colitionHandler(this.CharacterXOffSet, (this.cirkleMax / 2)*-1, this.unitWidth, this.index, this.range, true);
+                colitionHandler(this.CharacterXOffSet, this.cirkleMax / 2, this.unitWidth, this.index, this.range, true, false);
+                colitionHandler(this.CharacterXOffSet, (this.cirkleMax / 2) * -1, this.unitWidth, this.index, this.range, true, false);
 
                 if (unitsToGiveShield.length > 0) {
                     if (this.BelongsToPlayer) {
@@ -309,7 +309,7 @@ class Character{
                 renderOffSetXlocal = 50;
             }
 
-            if (colitionHandler(this.CharacterXOffSet, moveby, this.unitWidth, this.index, this.range, false) == false) {
+            if (colitionHandler(this.CharacterXOffSet, moveby, this.unitWidth, this.index, this.range, false, false) == false) {
                 this.CharacterXOffSet = this.CharacterXOffSet + moveby;//RETURN ON THIS
                 if (!this.isWalking) {
                     this.isWalking = true;
@@ -394,11 +394,13 @@ class Character{
     }
 }
 
-function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range, isWizard) {
+function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range, isWizard, noDMG) {
     if (moveBy > 0) {//handles players units colition
         if (currentPos + moveBy >= windowWidth - imageWidth - (windowWidth * 0.04)) {//check map colition
             if (!isWizard) {
-                queuedDMG.push(new damageTemplate(0, myIndex, i, false, true));
+                if (!noDMG) {
+                    queuedDMG.push(new damageTemplate(0, myIndex, i, false, true));
+                }
                 return true;
             }
         }
@@ -406,7 +408,9 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range, isWizar
             if (AICharacters[i] != null && AICharacters[i].unitIsAlive == true) {//collision between player units and AI units
                 if (AICharacters[i].CharacterXOffSet <= currentPos + moveBy + imageWidth + range) {
                     if (!isWizard) {
-                        queuedDMG.push(new damageTemplate(0, myIndex, i, true, false));
+                        if (!noDMG) {
+                            queuedDMG.push(new damageTemplate(0, myIndex, i, true, false));
+                        }
                         return true;
                     }
                 }
@@ -432,7 +436,9 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range, isWizar
     else {//handles AI units colition
         if (currentPos + moveBy <= (windowWidth * 0.04)) {//check map colition
             if (!isWizard) {
-                queuedDMG.push(new damageTemplate(0, myIndex, i, false, true));
+                if (!noDMG) {
+                    queuedDMG.push(new damageTemplate(0, myIndex, i, false, true));
+                }
                 return true;
             }
         }
@@ -441,7 +447,9 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range, isWizar
             if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {//collision between AI units and player units
                 if (playerCharacters[i].CharacterXOffSet + imageWidth >= currentPos + moveBy - range) {
                     if (!isWizard) {
-                        queuedDMG.push(new damageTemplate(0, myIndex, i, false, false));
+                        if (!noDMG) {
+                            queuedDMG.push(new damageTemplate(0, myIndex, i, false, false));
+                        }
                         return true;
                     }
                 }
@@ -792,8 +800,14 @@ function manageProduction() {
     if (AIisProducingSmth) {
         AIproduction.timeLeft--;
         if (AIproduction.timeLeft == 0) {
-            add_mem(AIproduction.Character, windowWidth, false);
-            AIisProducingSmth = false;
+            if (!colitionHandler(windowWidth - (windowWidth * 0.12), (-10), (windowWidth * 0.12), maxUnitCount + 1, 0, false, true)) {//TODO the image width here is not great, also the index is ok but no amazing
+                add_mem(AIproduction.Character, windowWidth, false);
+                AIisProducingSmth = false;
+            }
+            else {
+                AIproduction.timeLeft = 10;
+                return;
+            }
         }
     }
     if (!isProducingSmth) { return;}
@@ -803,7 +817,13 @@ function manageProduction() {
                 productuinBarProgress.style.width = "0%";
                 //manage the different things that could be produced
                 if (productionQueue[isProducing].type == 1) {
-                    add_mem(unitsAvailable[productionQueue[isProducing].overwrite], 0, true);
+                    if (!colitionHandler(0, 10, (windowWidth * 0.12), maxUnitCount+1, 0, false, true)) {//TODO the image width here is not great, also the index is ok but no amazing
+                        add_mem(unitsAvailable[productionQueue[isProducing].overwrite], 0, true);
+                    }
+                    else {
+                        productionQueue[isProducing].timeLeft = 10;
+                        return;
+                    }
                 }
                 else if (productionQueue[isProducing].type == 2) {
                     //add_mem(productionQueue[isProducing].Character, 0, true);
