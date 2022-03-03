@@ -146,12 +146,13 @@ class magicShield {
 
     cirkleShield = document.createElement("div");
 
-    constructor(isPlayers, Swidth, Sheight, CharacterYOffSet, CharacterXOffSet, unitHeight, unitWidth) {
+    constructor(isPlayers, Swidth, Sheight, CharacterYOffSet, CharacterXOffSet, unitHeight, unitWidth, owner) {
         this.isPlayers = isPlayers;
         this.lifeLeft = 2;
         this.Swidth = Swidth;
         this.unitHeight = unitHeight;
         this.unitWidth = unitWidth;
+        var owner = owner;
 
         this.cirkleShield.style.background = "blue";
         this.cirkleShield.style.width = Swidth + "px";
@@ -161,6 +162,8 @@ class magicShield {
         this.cirkleShield.style.opacity = 50 + "%";
         this.cirkleShield.style.position = "absolute";
         this.cirkleShield.style.borderRadius = 250 + "px";
+        this.cirkleShield.addEventListener("mouseover", function (event) { spectadedCharacter = owner; healthDisplayTimer = true; }, false);
+        this.cirkleShield.addEventListener("mouseleave", function (event) { healthDisplayTimer = false; }, false);
 
         document.body.appendChild(this.cirkleShield);
     }
@@ -269,7 +272,7 @@ class Character{
                         unitsToGiveShield.forEach((num) => {
                             if (!playerCharacters[num].hasShield) {
                                 playerCharacters[num].hasShield = true;
-                                playerCharacters[num].shield = new magicShield(playerCharacters[num].BelongsToPlayer, ((playerCharacters[num].unitHeight / 3) * 2) * 1.2, playerCharacters[num].unitHeight * 1.2, playerCharacters[num].CharacterYOffSet, playerCharacters[num].CharacterXOffSet, playerCharacters[num].unitWidth, playerCharacters[num].unitHeight);
+                                playerCharacters[num].shield = new magicShield(playerCharacters[num].BelongsToPlayer, ((playerCharacters[num].unitHeight / 3) * 2) * 1.2, playerCharacters[num].unitHeight * 1.2, playerCharacters[num].CharacterYOffSet, playerCharacters[num].CharacterXOffSet, playerCharacters[num].unitWidth, playerCharacters[num].unitHeight, playerCharacters[num]);
                             }
                             unitsToGiveShield.pop();
 
@@ -279,7 +282,7 @@ class Character{
                         unitsToGiveShield.forEach((num) => {
                             if (!AICharacters[num].hasShield) {
                                 AICharacters[num].hasShield = true;
-                                AICharacters[num].shield = new magicShield(AICharacters[num].BelongsToPlayer, ((AICharacters[num].unitHeight / 3) * 2) * 1.2, AICharacters[num].unitHeight * 1.2, AICharacters[num].CharacterYOffSet, AICharacters[num].CharacterXOffSet, AICharacters[num].unitWidth, AICharacters[num].unitHeight);
+                                AICharacters[num].shield = new magicShield(AICharacters[num].BelongsToPlayer, ((AICharacters[num].unitHeight / 3) * 2) * 1.2, AICharacters[num].unitHeight * 1.2, AICharacters[num].CharacterYOffSet, AICharacters[num].CharacterXOffSet, AICharacters[num].unitWidth, AICharacters[num].unitHeight, AICharacters[num]);
                             }
                             unitsToGiveShield.pop();
                         })
@@ -287,7 +290,7 @@ class Character{
                 }
                 if (!this.hasShield) {
                     this.hasShield = true;
-                    this.shield = new magicShield(this.BelongsToPlayer, ((this.unitHeight / 3) * 2) * 1.2, this.unitHeight*1.2, this.CharacterYOffSet, this.CharacterXOffSet, this.unitWidth, this.unitHeight);
+                    this.shield = new magicShield(this.BelongsToPlayer, ((this.unitHeight / 3) * 2) * 1.2, this.unitHeight*1.2, this.CharacterYOffSet, this.CharacterXOffSet, this.unitWidth, this.unitHeight, this);
                 }
                 if (unitsToGiveShield.length > 0) {
                     console.log("failsafe on stack 'unitsToGiveShield' clearing stack...");
