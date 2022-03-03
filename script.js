@@ -171,6 +171,7 @@ class magicShield {
 
     shieldRemoveLife() {
         this.lifeLeft--;
+        this.cirkleShield.style.opacity = 40 + "%";
         if (this.lifeLeft == 0) {
             document.body.removeChild(this.cirkleShield);
             return true;
@@ -185,7 +186,8 @@ class Character{
 
     cirkle = document.createElement("div");
     cirkleRadius;
-    cirkleMax = 200;
+    cirkleMax = 220;
+    wizardPowerDecay;
 
     constructor(health, dmg, moveSpeed, animations, startPos, index, belongsToPlayer, range, isWizard) {
         this.unitWidth = (windowWidth * 0.12);
@@ -226,6 +228,7 @@ class Character{
         this.npc.addEventListener("mouseover", function( event ) {spectadedCharacter = that; healthDisplayTimer = true;}, false);
         this.npc.addEventListener("mouseleave", function( event ) {healthDisplayTimer = false;}, false);
 
+        this.wizardPowerDecay = 10;
         this.cirkleRadius = 0;
         this.cirkle.style.background = "blue";
         this.cirkle.style.width = this.cirkleRadius + "px";
@@ -249,9 +252,10 @@ class Character{
     characterBehavior() {
         if (this.isMakingAShield) {
             if (this.cirkleRadius < this.cirkleMax) {
-                this.cirkleRadius++;
+                this.cirkleRadius += 10/this.wizardPowerDecay;
             }
             else {
+                this.wizardPowerDecay++;
                 this.cirkleRadius = 0;
                 this.cirkle.style.width = this.cirkleRadius + "px";
                 document.body.removeChild(this.cirkle);
@@ -377,7 +381,7 @@ class Character{
     reciveDamage(amount) {
         if (this.hasShield) {
             if (this.shield.shieldRemoveLife()) {
-                this.hasShield == false;
+                this.hasShield = false;
             }
             return;
         }

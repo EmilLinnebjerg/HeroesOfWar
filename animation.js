@@ -14,6 +14,16 @@ cloudHider.style.left = windowWidth + "px";
 cloudHider.style.zIndex = 1;
 document.body.appendChild(cloudHider);
 
+var cloudHider2 = document.createElement("div");
+cloudHider2.style.background = "white";
+cloudHider2.style.position = "absolute";
+cloudHider2.style.width = windowWidth + "px";
+cloudHider2.style.height = windowHeight + "px";
+cloudHider2.style.top = windowHeight + "px";
+cloudHider2.style.left = 0 + "px";
+cloudHider2.style.zIndex = 1;
+document.body.appendChild(cloudHider2);
+
 var clouds1 = document.createElement("img");
 clouds1.src = "Clouds.png";
 clouds1.style.position = "absolute";
