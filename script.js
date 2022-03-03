@@ -6,6 +6,7 @@ var AICharacters = [maxUnitCount];
 var maxMissleCount = 8;
 var Missles = [maxMissleCount];
 var queuedDMG = [];
+var unitsToGiveShield = [];
 var spectadedCharacter;
 var healthDisplayTimer = false;
 var AIHealthOffSet = windowHeight * 0.55;
@@ -55,7 +56,7 @@ class missle{
 
         if (this.isPlayers) {
             if (this.missleCooldown == 0) {
-                if (!colitionHandler((this.startX + this.renderOffSetX), 5, 16, this.myIndex, 0)) {
+                if (!colitionHandler((this.startX + this.renderOffSetX), 5, 16, this.myIndex, 0, false)) {
                     this.startX = this.startX + 5;
                     this.renderOffSetY = this.renderOffSetY + 0.6;
                     this.missleCooldown = this.missleSpeed;
@@ -79,7 +80,7 @@ class missle{
 
         if (!this.isPlayers) {
             if (this.missleCooldown == 0) {
-                if (!colitionHandler(this.startX, -5, 60, this.myIndex, 0)) {//TODO use unit standard size or pass a hitbox
+                if (!colitionHandler(this.startX, -5, 60, this.myIndex, 0, false)) {//TODO use unit standard size or pass a hitbox
                     this.startX = this.startX - 5;
                     this.renderOffSetY = this.renderOffSetY + 0.6;
                     this.missleCooldown = this.missleSpeed;
@@ -141,8 +142,50 @@ class CharacterTemplate {
     }
 }
 
+class magicShield {
+
+    cirkleShield = document.createElement("div");
+
+    constructor(isPlayers, Swidth, Sheight, CharacterYOffSet, CharacterXOffSet, unitHeight, unitWidth) {
+        this.isPlayers = isPlayers;
+        this.lifeLeft = 2;
+        this.Swidth = Swidth;
+        this.unitHeight = unitHeight;
+        this.unitWidth = unitWidth;
+
+        this.cirkleShield.style.background = "blue";
+        this.cirkleShield.style.width = Swidth + "px";
+        this.cirkleShield.style.height = Sheight + "px";
+        this.cirkleShield.style.top = CharacterYOffSet + "px";
+        this.cirkleShield.style.left = CharacterXOffSet + (this.unitWidth / 2) - (this.Swidth / 3.5) + "px";
+        this.cirkleShield.style.opacity = 50 + "%";
+        this.cirkleShield.style.position = "absolute";
+        this.cirkleShield.style.borderRadius = 250 + "px";
+
+        document.body.appendChild(this.cirkleShield);
+    }
+
+    renderShield(CharacterXOffSet) {
+        this.cirkleShield.style.left = CharacterXOffSet + (this.unitWidth / 2) - (this.Swidth / 3.5) + "px";
+    }
+
+    shieldRemoveLife() {
+        this.lifeLeft--;
+        if (this.lifeLeft == 0) {
+            document.body.removeChild(this.cirkleShield);
+            return true;
+        }
+        return false;
+    }
+}
+
 class Character{
     unitIsAlive;
+    isMakingAShield;
+
+    cirkle = document.createElement("div");
+    cirkleRadius;
+    cirkleMax = 200;
 
     constructor(health, dmg, moveSpeed, animations, startPos, index, belongsToPlayer, range, isWizard) {
         this.unitWidth = (windowWidth * 0.12);
@@ -157,6 +200,8 @@ class Character{
 
         this.totalHealth = health;
         this.health = health;
+        this.hasShield = false;
+        this.shield;
         this.strength = dmg;
         this.speed = moveSpeed * animationStages;
 
@@ -180,9 +225,20 @@ class Character{
         this.npc.style.top = this.CharacterYOffSet + "px";
         this.npc.addEventListener("mouseover", function( event ) {spectadedCharacter = that; healthDisplayTimer = true;}, false);
         this.npc.addEventListener("mouseleave", function( event ) {healthDisplayTimer = false;}, false);
-        
+
+        this.cirkleRadius = 0;
+        this.cirkle.style.background = "blue";
+        this.cirkle.style.width = this.cirkleRadius + "px";
+        this.cirkle.style.height = this.cirkleRadius + "px";
+        this.cirkle.style.top = this.CharacterYOffSet + (this.unitHeight/2) + "px";
+        this.cirkle.style.left = this.CharacterXOffSet + (this.unitWidth / 2) + "px";
+        this.cirkle.style.opacity = 50 + "%";
+        this.cirkle.style.position = "absolute";
+        this.cirkle.style.borderRadius = 250 + "px";
+
         this.index = index;
         this.unitIsAlive = true;
+        this.isMakingAShield = false;
         //this.CharacterXOffSet = startPos - this.unitWidth;
         this.BelongsToPlayer = belongsToPlayer;
         this.nextMove = 0;
@@ -191,6 +247,53 @@ class Character{
     }
 
     characterBehavior() {
+        if (this.isMakingAShield) {
+            if (this.cirkleRadius < this.cirkleMax) {
+                this.cirkleRadius++;
+            }
+            else {
+                this.cirkleRadius = 0;
+                this.cirkle.style.width = this.cirkleRadius + "px";
+                document.body.removeChild(this.cirkle);
+                this.isMakingAShield = false;
+
+                colitionHandler(this.CharacterXOffSet, this.cirkleMax / 2, this.unitWidth, this.index, this.range, true);
+                colitionHandler(this.CharacterXOffSet, (this.cirkleMax / 2)*-1, this.unitWidth, this.index, this.range, true);
+
+                if (unitsToGiveShield.length > 0) {
+                    if (this.BelongsToPlayer) {
+                        unitsToGiveShield.forEach((num) => {
+                            if (!playerCharacters[num].hasShield) {
+                                playerCharacters[num].hasShield = true;
+                                playerCharacters[num].shield = new magicShield(playerCharacters[num].BelongsToPlayer, ((playerCharacters[num].unitHeight / 3) * 2) * 1.2, playerCharacters[num].unitHeight * 1.2, playerCharacters[num].CharacterYOffSet, playerCharacters[num].CharacterXOffSet, playerCharacters[num].unitWidth, playerCharacters[num].unitHeight);
+                            }
+                            unitsToGiveShield.pop();
+
+                        })
+                    }
+                    else {
+                        unitsToGiveShield.forEach((num) => {
+                            if (!AICharacters[num].hasShield) {
+                                AICharacters[num].hasShield = true;
+                                AICharacters[num].shield = new magicShield(AICharacters[num].BelongsToPlayer, ((AICharacters[num].unitHeight / 3) * 2) * 1.2, AICharacters[num].unitHeight * 1.2, AICharacters[num].CharacterYOffSet, AICharacters[num].CharacterXOffSet, AICharacters[num].unitWidth, AICharacters[num].unitHeight);
+                            }
+                            unitsToGiveShield.pop();
+                        })
+                    }
+                }
+                if (!this.hasShield) {
+                    this.hasShield = true;
+                    this.shield = new magicShield(this.BelongsToPlayer, ((this.unitHeight / 3) * 2) * 1.2, this.unitHeight*1.2, this.CharacterYOffSet, this.CharacterXOffSet, this.unitWidth, this.unitHeight);
+                }
+                if (unitsToGiveShield.length > 0) {
+                    console.log("failsafe on stack 'unitsToGiveShield' clearing stack...");
+                    while (unitsToGiveShield.length > 0) { unitsToGiveShield.pop()}
+                }
+            }
+
+            return;
+        }
+
         var moveby;
         var renderOffSetXlocal;
 
@@ -206,21 +309,29 @@ class Character{
                 renderOffSetXlocal = 50;
             }
 
-            if (colitionHandler(this.CharacterXOffSet, moveby, this.unitWidth, this.index, this.range) == false) {
+            if (colitionHandler(this.CharacterXOffSet, moveby, this.unitWidth, this.index, this.range, false) == false) {
                 this.CharacterXOffSet = this.CharacterXOffSet + moveby;//RETURN ON THIS
                 if (!this.isWalking) {
                     this.isWalking = true;
                 }
             }
             else {
+                if (this.isWizard) {
+                    this.isMakingAShield = true;
+                    document.body.appendChild(this.cirkle);
+                }
+
                 this.idlePos = true;
                 if (queuedDMG.length > 0) {
                     if (this.BelongsToPlayer == queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
-                        if (this.range == 0) {
+                        if (this.range == 0 && !this.isWizard) {
                             queuedDMG[queuedDMG.length - 1].dmg = this.strength;
                         }
+                        else if (this.isWizard) {
+                            queuedDMG.pop();
+                        }
                         else {
-                            if (this.nextShot == 0) {
+                            if (this.nextShot == 0 && !this.isWizard) {
                                 for (i = 0; i < maxMissleCount; i++) {
                                     if (Missles[i] == null || Missles[i].isInAir != true) {
                                         Missles[i] = new missle(this.strength, this.range, this.BelongsToPlayer, true, this.CharacterXOffSet, this.CharacterYOffSet, this.unitWidth, renderOffSetXlocal, this.index);
@@ -252,29 +363,52 @@ class Character{
 
     renderUpdate() {
         this.npc.style.left = this.CharacterXOffSet + "px";
-        
+        if (this.isMakingAShield) {
+            this.cirkle.style.width = this.cirkleRadius + "px";
+            this.cirkle.style.height = this.cirkleRadius + "px";
+            this.cirkle.style.top = this.CharacterYOffSet + (this.unitHeight / 2) - (this.cirkleRadius / 2) + "px";
+            this.cirkle.style.left = this.CharacterXOffSet + (this.unitWidth / 2) - (this.cirkleRadius/2) + "px";
+        }
+        if (this.hasShield) {
+            this.shield.renderShield(this.CharacterXOffSet);
+        }
     }
 
     reciveDamage(amount) {
+        if (this.hasShield) {
+            if (this.shield.shieldRemoveLife()) {
+                this.hasShield == false;
+            }
+            return;
+        }
+
         this.health -= amount;
         if (this.health <= 0) {
             this.unitIsAlive = false;
             document.body.removeChild(this.npc);
+
+            if (this.isMakingAShield) {
+                document.body.removeChild(this.cirkle);
+            }
         }
     }
 }
 
-function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range) {
+function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range, isWizard) {
     if (moveBy > 0) {//handles players units colition
-        if (currentPos + moveBy >= windowWidth - imageWidth - (windowWidth*0.04)) {//check map colition
-            queuedDMG.push(new damageTemplate(0, myIndex, i, false, true));
-            return true;
+        if (currentPos + moveBy >= windowWidth - imageWidth - (windowWidth * 0.04)) {//check map colition
+            if (!isWizard) {
+                queuedDMG.push(new damageTemplate(0, myIndex, i, false, true));
+                return true;
+            }
         }
         for (i = 0; i < maxUnitCount; i++) {
             if (AICharacters[i] != null && AICharacters[i].unitIsAlive == true) {//collision between player units and AI units
                 if (AICharacters[i].CharacterXOffSet <= currentPos + moveBy + imageWidth + range) {
-                    queuedDMG.push(new damageTemplate(0, myIndex, i, true, false));
-                    return true;
+                    if (!isWizard) {
+                        queuedDMG.push(new damageTemplate(0, myIndex, i, true, false));
+                        return true;
+                    }
                 }
             }
 
@@ -284,7 +418,12 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range) {
             if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {//collision between player units and player units
                 if (playerCharacters[i].CharacterXOffSet > currentPos) {
                     if (playerCharacters[i].CharacterXOffSet <= currentPos + moveBy + imageWidth) {
-                        return true;
+                        if (isWizard) {
+                            unitsToGiveShield.push(i);
+                        }
+                        else {
+                            return true;
+                        }
                     }
                 }
             }
@@ -292,15 +431,19 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range) {
     }
     else {//handles AI units colition
         if (currentPos + moveBy <= (windowWidth * 0.04)) {//check map colition
-            queuedDMG.push(new damageTemplate(0, myIndex, i, false, true));
-            return true;
+            if (!isWizard) {
+                queuedDMG.push(new damageTemplate(0, myIndex, i, false, true));
+                return true;
+            }
         }
 
         for (i = 0; i < maxUnitCount; i++) {
             if (playerCharacters[i] != null && playerCharacters[i].unitIsAlive == true) {//collision between AI units and player units
                 if (playerCharacters[i].CharacterXOffSet + imageWidth >= currentPos + moveBy - range) {
-                    queuedDMG.push(new damageTemplate(0, myIndex, i, false, false));
-                    return true;
+                    if (!isWizard) {
+                        queuedDMG.push(new damageTemplate(0, myIndex, i, false, false));
+                        return true;
+                    }
                 }
             }
 
@@ -310,7 +453,12 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range) {
             if (AICharacters[i] != null && AICharacters[i].unitIsAlive == true) {//collision between player units and player units
                 if (AICharacters[i].CharacterXOffSet < currentPos) {
                     if (AICharacters[i].CharacterXOffSet + imageWidth >= currentPos + moveBy) {
-                        return true;
+                        if (isWizard) {
+                            unitsToGiveShield.push(i);
+                        }
+                        else {
+                            return true;
+                        }
                     }
                 }
             }
@@ -345,11 +493,11 @@ function ProductionElement(type, thumbnail, totalTime, overwrite) {
 //alert("Starting");
 
 var unitLongsword = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
-    "Knight", 300, "rome.png", 0, false);
+    "Knight", 100, "rome.png", 0, false);
 var unitArcher = new CharacterTemplate(100, 50, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
-    "Wizard", 300, "archer.png", 0, true);
+    "Wizard", 100, "archer.png", 0, true);
 var unitPolearm = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
-    "Archer", 300, "rome.png", 100, false);
+    "Archer", 100, "rome.png", 100, false);
 
 var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
 var productionQueue = [5];
@@ -436,24 +584,24 @@ var productuinBarProgress = document.createElement('div');
 productuinBarProgress.style.background = "white";
 productuinBarProgress.style.width = (0.40 * windowWidth)/5 + "px";
 productuinBarProgress.style.height = (0.10 * windowHeight) + "px";
-        productuinBarProgress.style.position = "absolute";
+productuinBarProgress.style.position = "absolute";
 productuinBarProgress.style.top = 0 + "px";
 productuinBarProgress.style.left = 0 + "px";
-        productuinBarProgress.style.opacity = "0.5";
+productuinBarProgress.style.opacity = "0.5";
 
-        var productuinMenuBack = document.createElement('div');
-        productuinMenuBack.style.background = "gray";
+var productuinMenuBack = document.createElement('div');
+productuinMenuBack.style.background = "gray";
 productuinMenuBack.style.width = (0.40 * windowWidth) + "px";
 productuinMenuBack.style.height = (0.10 * windowHeight) + "px";
-        productuinMenuBack.style.position = "absolute";
+productuinMenuBack.style.position = "absolute";
 productuinMenuBack.style.top = 0 + "px";
 productuinMenuBack.style.left = 0 + "px";
 
-        var productuinMenuEdge = document.createElement('div');
-        productuinMenuEdge.style.background = "black";
+var productuinMenuEdge = document.createElement('div');
+productuinMenuEdge.style.background = "black";
 productuinMenuEdge.style.width = (0.404 * windowWidth) + "px";
 productuinMenuEdge.style.height = (0.105 * windowHeight) + "px";
-        productuinMenuEdge.style.position = "absolute";
+productuinMenuEdge.style.position = "absolute";
 productuinMenuEdge.style.top = 0 + "px";
 productuinMenuEdge.style.left = 0 + "px";
 
@@ -473,11 +621,10 @@ function displayHealth(){
 }
 
 document.body.appendChild(productuinMenuEdge);
-        document.body.appendChild(productuinMenuBack);
-        document.body.appendChild(unit1);
-        document.body.appendChild(unit2);
-        document.body.appendChild(unit3);
-
+document.body.appendChild(productuinMenuBack);
+document.body.appendChild(unit1);
+document.body.appendChild(unit2);
+document.body.appendChild(unit3);
 
 function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
     widthBtn = (0.09 * windowWidth);
@@ -784,6 +931,7 @@ function manageDamage() {
                 if (AIHealthOffSet < 0) {
                     gameOver(true);
                 }
+                continue;
             }
             AICharacters[damageHandled.reciver].reciveDamage(damageHandled.dmg);
         }
@@ -793,6 +941,7 @@ function manageDamage() {
                 if (PlayerHealthOffSet < 0) {
                     gameOver(false);
                 }
+                continue;
             }
             playerCharacters[damageHandled.reciver].reciveDamage(damageHandled.dmg);
         }
@@ -818,27 +967,6 @@ function add_mem(unit, position, isPlayers) {
             }
         }
     }
-
-
-  /*let playDiv = document.getElementById('playboard');
-  playDiv.appendChild(character[counter].wiz);
-  let container = document.createElement('div');
-  container.style.width = 113 + "px";
-  let pBar = document.createElement('div');
-  pBar.id="myBar"+counter;
-  pBar.classList.add ("w3-blue");
-  pBar.style.height = 24 + "px";
-  pBar.style.width = character[counter].strength + "%";
-  container.style.position = 'relative';
-  container.style.left = pos + 60 + "px";
-  container.style.top = 200 + "px";
-  playDiv.style.zIndex = 40;
-  container.appendChild(pBar);
-  playDiv.appendChild(container);
-
-
-  decay(counter);*/
-  counter++;
 }
 
 function add_wiz(){
