@@ -394,7 +394,7 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range, isWizar
         if (currentPos + moveBy >= windowWidth - imageWidth - (windowWidth * 0.04)) {//check map colition
             if (!isWizard) {
                 if (!noDMG) {
-                    queuedDMG.push(new damageTemplate(0, myIndex, i, false, true));
+                    queuedDMG.push(new damageTemplate(0, myIndex, i, true, true));
                 }
                 return true;
             }
@@ -495,7 +495,7 @@ function ProductionElement(type, thumbnail, totalTime, overwrite) {
         }
 //alert("Starting");
 
-var unitLongsword = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
+var unitLongsword = new CharacterTemplate(100, 5, 1, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
     "Knight", 100, "rome.png", 0, false);
 var unitArcher = new CharacterTemplate(100, 50, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
     "Wizard", 100, "archer.png", 0, true);
@@ -928,7 +928,7 @@ function tick() {
     updateTheUnitsBehavior(playerCharacters);
     updateTheUnitsBehavior(AICharacters);
 
-    manageAITurn();
+    //manageAITurn();
     manageDamage();
 
     updateMissleBehavior();
