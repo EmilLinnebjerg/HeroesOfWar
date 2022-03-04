@@ -11,6 +11,30 @@ var spectadedCharacter;
 var healthDisplayTimer = false;
 var AIHealthOffSet = windowHeight * 0.55;
 var PlayerHealthOffSet = windowHeight * 0.55;
+let dispAnim;
+let loopAnim;
+let menuDiv = document.getElementById('menuDiv');
+let menuAnim;
+
+function loadAnim() {
+    let gameTitle = document.createElement('img');
+    document.body.appendChild(gameTitle);
+    gameTitle.setAttribute('id', 'gameTitle');
+    gameTitle.src = 'gameTitle.png';
+    gameTitle.style.zIndex = 7;
+    gameTitle.style.left = 222 + 'px';
+    gameTitle.style.top = 0 + 'px';
+    let pos = 0;
+    menuAnim = setInterval(() => {
+        gameTitle.style.top = pos + 'px';
+        if (pos < 100)
+            pos++;
+        else {
+            document.getElementById('mnuStart').style.visibility = 'visible';
+        }
+    }, 30);
+}
+loadAnim();
 
 class missle{
     cutoff = (windowHeight * 0.21) + (windowHeight * 0.70) - 16;
@@ -473,15 +497,19 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range, isWizar
 document.getElementById('mnuStart').addEventListener("mouseover", function (event) { event.target.style.opacity = "100%" });
 document.getElementById('mnuStart').addEventListener("mouseleave", function (event) { event.target.style.opacity = "60%" });
 function startGame() {
-    menuDiv = document.getElementById('menuDiv');
+    clearInterval(menuAnim);
     document.getElementById("bm");
     bm.loop = true;
     bm.play();
-    menuDiv.style.visibility = "hidden";
+    document.getElementById('menuDiv').style.visibility = 'hidden';
+    document.getElementById('mnuStart').style.visibility = 'hidden';
+    document.getElementById('gameTitle').style.visibility = 'hidden';
+    document.getElementById('background').style.visibility = 'hidden';
+    document.getElementById('foreground').style.visibility = 'hidden';
 
 
-    setInterval(displayLoop, 34);//starts game loop time is in ms
-    setInterval(tick, 34);//starts game loop time is in ms
+    dispAnim = setInterval(displayLoop, 34);//starts game loop time is in ms
+    loopAnim = setInterval(tick, 34);//starts game loop time is in ms
 
 }
 
@@ -1035,5 +1063,41 @@ console.log(wiz);
 }
 
 function gameOver(playerWon) {
-    alert("game done implement something");
+
+    clearInterval(dispAnim);
+    clearInterval(loopAnim);
+    let wonImage = document.createElement("img");
+    wonImage.style.zIndex = 7;
+    document.body.appendChild(wonImage);
+    wonImage.style.left = 250 + 'px';
+    wonImage.style.top = 0 + 'px';
+    if (PlayerHealthOffSet <= 0)
+        wonImage.src = "computerWon.png"
+    if (AIHealthOffSet <= 0)
+        wonImage.src = "youWon.png"
+    let endImage = document.createElement('img');
+    document.body.appendChild(endImage);
+    endImage.src = 'playAgain.png';
+    endImage.style.zIndex = 7;
+    endImage.style.left = 250 + 'px';
+    endImage.style.top = -50 + 'px';
+    endImage.style.opacity = 60 + '%';
+    endImage.addEventListener('mouseover', (e) => { e.target.style.opacity = 100 + '%'; });
+    endImage.addEventListener('mouseleave', (e) => { e.target.style.opacity = 60 + '%'; });
+    let pos = -100;
+    let winpos = 0;
+    endImage.addEventListener('click', () => { location.reload() });
+    setInterval(() => {
+        endImage.style.top = pos + 'px';
+        wonImage.style.top = winpos + 'px';
+        if (pos < 150)
+            pos++;
+        if (winpos < 90)
+            winpos++;
+    }, 30);
+
+    document.getElementById("bm");
+    bm.pause();
+    tick();
+    displayLoop();
 }

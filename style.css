@@ -1,8 +1,6 @@
 img
 {
 position:absolute;
-top: 0px;
-left: 0px;
 }
 #backgroud
 {
@@ -15,10 +13,14 @@ left: 0px;
 #mnuStart
 {
   left : 250px;
-  top: 100px;  
-  opacity: 60%;
+  top: 150px;  
+  opacity: 80%;
+  visibility: hidden;
 }
 body
 {
   cursor: url(cursor_sword.png), pointer;
+}
+#menuDiv{
+  z-index: 3;
 }
