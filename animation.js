@@ -42,6 +42,15 @@ clouds2.style.top = 0 + "px";
 clouds2.style.left = 0 + "px";
 document.body.appendChild(clouds2);
 
+var hillsBack = document.createElement("img");
+hillsBack.src = "Hills.png";
+hillsBack.style.position = "absolute";
+hillsBack.style.width = windowWidth + "px";
+hillsBack.style.height = windowHeight + "px";
+hillsBack.style.top = 50 + "px";
+hillsBack.style.left = 0 + "px";
+document.body.appendChild(hillsBack);
+
 class animation {
     constructor(walk1, walk2, walk3, attack1, attack2, attack3, idle) {
         this.walk1 = walk1;
