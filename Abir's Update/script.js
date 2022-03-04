@@ -1038,7 +1038,7 @@ function gameOver(playerWon) {
     if(PlayerHealthOffSet <=0)
         wonImage.src = "computerWon.png"   
    if(AIHealthOffSet <=0 )
-       wonImage.src = "playerWon.png"
+       wonImage.src = "youWon.png"
     let endImage = document.createElement('img');
     document.body.appendChild(endImage);
     endImage.src = 'playAgain.png';
