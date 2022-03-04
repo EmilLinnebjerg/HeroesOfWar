@@ -1045,6 +1045,9 @@ function gameOver(playerWon) {
     endImage.style.zIndex = 7;
     endImage.style.left = 250 + 'px';
     endImage.style.top = -50 + 'px';
+    endImage.style.opacity = 60 +'%';
+    endImage.addEventListener('mouseover', (e)=>{e.target.style.opacity = 100 + '%';});
+    endImage.addEventListener('mouseleave', (e)=>{e.target.style.opacity = 60 + '%';});
     let pos = -100;
     let winpos = 0;
     endImage.addEventListener('click',()=>{location.reload()} );
