@@ -272,11 +272,11 @@ class Character{
 
         if (this.BelongsToPlayer) {
             moveby = 10;
-            renderOffSetXlocal = 50;
+            renderOffSetXlocal = 25;
         }
         if (!this.BelongsToPlayer) {
             moveby = -10;
-            renderOffSetXlocal = 50;
+            renderOffSetXlocal = 25;
         }
 
         if (this.isMakingAShield) {
@@ -782,7 +782,7 @@ function selectProduction(type, index) {
                 case 2://speed
                     {
                         productionQueue[productionEndSpot] = new ProductionElement(2, "icon_speed3.png", upgradeReletivePrice, index - 1);
-                        var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].walking_anim, unitsAvailable[index - 1].attack_anim, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range);
+                        var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].animations, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range, unitsAvailable[index - 1].isWizard);
                         upgrade.moveSpeed -= 190;
                         if(upgrade.moveSpeed <= 10){
                             upgrade.moveSpeed = 10;
@@ -796,7 +796,7 @@ function selectProduction(type, index) {
                 case 3://dmg
                     {
                         productionQueue[productionEndSpot] = new ProductionElement(2, "icon_damage3.png", upgradeReletivePrice, index - 1);
-                        var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].walking_anim, unitsAvailable[index - 1].attack_anim, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range);
+                        var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].animations, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range, unitsAvailable[index - 1].isWizard);
                         upgrade.dmg += 100;
 
                         productionQueue[productionEndSpot].Character = upgrade;
