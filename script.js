@@ -523,7 +523,7 @@ function ProductionElement(type, thumbnail, totalTime, overwrite) {
         }
 //alert("Starting");
 
-var unitLongsword = new CharacterTemplate(100, 5, 1, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
+var unitLongsword = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
     "Knight", 100, "rome.png", 0, false);
 var unitArcher = new CharacterTemplate(100, 50, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
     "Wizard", 100, "archer.png", 0, true);
@@ -956,7 +956,7 @@ function tick() {
     updateTheUnitsBehavior(playerCharacters);
     updateTheUnitsBehavior(AICharacters);
 
-    //manageAITurn();
+    manageAITurn();
     manageDamage();
 
     updateMissleBehavior();
@@ -967,8 +967,8 @@ function manageAITurn() {
     if (AIisProducingSmth == false) {
         AIisProducingSmth = true;
         unitSelector = Math.floor(Math.random()*3);
-        AIproduction = new ProductionElement(1, unitsAvailable[unitSelector].thumbnail, unitsAvailable[unitSelector].productionCost, 0);
-        AIproduction.Character = unitsAvailable[unitSelector];
+        AIproduction = new ProductionElement(1, AIunitsAvailable[unitSelector].thumbnail, AIunitsAvailable[unitSelector].productionCost, 0);
+        AIproduction.Character = AIunitsAvailable[unitSelector];
         /*if(colitionHandler(windowWidth - (windowWidth * 0.12),-10,(windowWidth * 0.12),maxUnitCount+1,0,false,true)){//TODO this aint great
             
             return;
