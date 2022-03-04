@@ -20,14 +20,16 @@ function loadAnim() {
     let gameTitle = document.createElement('img');
     document.body.appendChild(gameTitle);
     gameTitle.setAttribute('id', 'gameTitle');
-    gameTitle.src = 'gameTitle.png';
+    gameTitle.src = 'heroesofwar_logo.png';
+    gameTitle.style.width = 500 + "px";
+    gameTitle.style.height = 200;
     gameTitle.style.zIndex = 7;
-    gameTitle.style.left = 222 + 'px';
+    gameTitle.style.left = 190 + 'px';
     gameTitle.style.top = 0 + 'px';
     let pos = 0;
     menuAnim = setInterval(() => {
         gameTitle.style.top = pos + 'px';
-        if (pos < 100)
+        if (pos < 68)
             pos++;
         else {
             document.getElementById('mnuStart').style.visibility = 'visible';
@@ -264,6 +266,19 @@ class Character{
     }
 
     characterBehavior() {
+        var moveby;
+        var renderOffSetXlocal;
+        var wizardDoingDmg = false;
+
+        if (this.BelongsToPlayer) {
+            moveby = 10;
+            renderOffSetXlocal = 50;
+        }
+        if (!this.BelongsToPlayer) {
+            moveby = -10;
+            renderOffSetXlocal = 50;
+        }
+
         if (this.isMakingAShield) {
             if (this.cirkleRadius < this.cirkleMax) {
                 this.cirkleRadius += 10/this.wizardPowerDecay;
@@ -299,11 +314,7 @@ class Character{
                         })
                     }
                 }
-                /*
-                if (!this.hasShield) {
-                    this.hasShield = true;
-                    this.shield = new magicShield(this.BelongsToPlayer, ((this.unitHeight / 3) * 2) * 1.2, this.unitHeight*1.2, this.CharacterYOffSet, this.CharacterXOffSet, this.unitWidth, this.unitHeight, this);
-                }*/
+
                 if (unitsToGiveShield.length > 0) {
                     console.log("failsafe on stack 'unitsToGiveShield' clearing stack...");
                     while (unitsToGiveShield.length > 0) { unitsToGiveShield.pop()}
@@ -313,20 +324,9 @@ class Character{
             return;
         }
 
-        var moveby;
-        var renderOffSetXlocal;
-
         this.idlePos = false;
 
         if (this.nextMove == 0) {
-            if (this.BelongsToPlayer) {
-                moveby = 10;
-                renderOffSetXlocal = 50;
-            }
-            if (!this.BelongsToPlayer) {
-                moveby = -10;
-                renderOffSetXlocal = 50;
-            }
 
             if (colitionHandler(this.CharacterXOffSet, moveby, this.unitWidth, this.index, this.range, false, false) == false) {
                 this.CharacterXOffSet = this.CharacterXOffSet + moveby;//RETURN ON THIS
@@ -336,12 +336,26 @@ class Character{
             }
             else {
                 if (this.isWizard) {
-                    this.isMakingAShield = true;
-                    document.body.appendChild(this.cirkle);
+                    colitionHandler(this.CharacterXOffSet, this.cirkleMax / 2, this.unitWidth, this.index, this.range, true, false);
+
+                    if (unitsToGiveShield.length == 0) {
+                        if (queuedDMG.length > 0) {
+                            if (this.BelongsToPlayer == queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
+                                queuedDMG[queuedDMG.length - 1].dmg = this.strength;
+                            }
+                        }
+
+                    }
+                    else {
+                        this.isMakingAShield = true;
+                        document.body.appendChild(this.cirkle);
+                    }
+                    while (unitsToGiveShield.length > 0) { unitsToGiveShield.pop(); }
+                    wizardDoingDmg = true;
                 }
 
                 this.idlePos = true;
-                if (queuedDMG.length > 0) {
+                if (queuedDMG.length > 0 && !wizardDoingDmg) {
                     if (this.BelongsToPlayer == queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
                         if (this.range == 0 && !this.isWizard) {
                             queuedDMG[queuedDMG.length - 1].dmg = this.strength;
@@ -525,14 +539,14 @@ function ProductionElement(type, thumbnail, totalTime, overwrite) {
 
 var unitLongsword = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
     "Knight", 100, "rome.png", 0, false);
-var unitArcher = new CharacterTemplate(100, 50, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
+var unitArcher = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
     "Wizard", 100, "archer.png", 0, true);
 var unitPolearm = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
     "Archer", 100, "rome.png", 150, false);
 
 var AIunitLongsword = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
     "Knight", 100, "rome.png", 0, false);
-var AIunitArcher = new CharacterTemplate(100, 50, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
+var AIunitArcher = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
     "Wizard", 100, "archer.png", 0, true);
 var AIunitPolearm = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
     "Archer", 100, "rome.png", 150, false);
