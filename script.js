@@ -11,6 +11,7 @@ var spectadedCharacter;
 var healthDisplayTimer = false;
 var AIHealthOffSet = windowHeight * 0.55;
 var PlayerHealthOffSet = windowHeight * 0.55;
+var awaitingDeployment = false;
 let dispAnim;
 let loopAnim;
 let menuDiv = document.getElementById('menuDiv');
@@ -433,8 +434,8 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range, isWizar
             if (!isWizard) {
                 if (!noDMG) {
                     queuedDMG.push(new damageTemplate(0, myIndex, i, true, true));
+                    return true;
                 }
-                return true;
             }
         }
         for (i = 0; i < maxUnitCount; i++) {
@@ -443,8 +444,8 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range, isWizar
                     if (!isWizard) {
                         if (!noDMG) {
                             queuedDMG.push(new damageTemplate(0, myIndex, i, true, false));
+                            return true;
                         }
-                        return true;
                     }
                 }
             }
@@ -471,8 +472,8 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range, isWizar
             if (!isWizard) {
                 if (!noDMG) {
                     queuedDMG.push(new damageTemplate(0, myIndex, i, false, true));
+                    return true;
                 }
-                return true;
             }
         }
 
@@ -482,8 +483,8 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range, isWizar
                     if (!isWizard) {
                         if (!noDMG) {
                             queuedDMG.push(new damageTemplate(0, myIndex, i, false, false));
+                            return true;
                         }
-                        return true;
                     }
                 }
             }
@@ -856,17 +857,29 @@ function manageProduction() {
         }
     }
     if (!isProducingSmth) { return;}
-    productuinBarProgress.style.width = ((0.40 * windowWidth) / 5) * (productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) + "px";
+    if (!awaitingDeployment) {
+        productuinBarProgress.style.width = ((0.40 * windowWidth) / 5) * (productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) + "px";
+    }
+    else {
+        productuinBarProgress.style.width = (0.40 * windowWidth) / 5 + "px";
+    }
             productionQueue[isProducing].timeLeft = productionQueue[isProducing].timeLeft - 1;
-            if ((productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) == 0) {
-                productuinBarProgress.style.width = "0%";
+    if ((productionQueue[isProducing].timeLeft / productionQueue[isProducing].totalTime) == 0) {
+        if (!awaitingDeployment) {
+            productuinBarProgress.style.width = "0%";
+        }
+                
                 //manage the different things that could be produced
                 if (productionQueue[isProducing].type == 1) {
-                    if (!colitionHandler(0, 10, (windowWidth * 0.12), maxUnitCount+1, 0, false, true)) {//TODO the image width here is not great, also the index is ok but no amazing
+                    if (!colitionHandler(0, 10, (windowWidth * 0.12), maxUnitCount + 1, 0, false, true)) {//TODO the image width here is not great, also the index is ok but no amazing
+                        awaitingDeployment = false;
+                        productuinBarProgress.style.background = "white";
                         add_mem(unitsAvailable[productionQueue[isProducing].overwrite], 0, true);
                     }
                     else {
                         productionQueue[isProducing].timeLeft = 10;
+                        productuinBarProgress.style.background = "yellow";
+                        awaitingDeployment = true;
                         return;
                     }
                 }
