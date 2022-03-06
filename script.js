@@ -620,9 +620,6 @@ function makeAHealthBar(barLeft, barElement) {
 
 //background1.click;
 //background1.addEventListener('click', function () {alert("now")});
-document.getElementById("bm");
-bm.loop = true;
-bm.play();
 var unit1 = document.createElement("img");
 var unit2 = document.createElement("img");
 var unit3 = document.createElement("img");
