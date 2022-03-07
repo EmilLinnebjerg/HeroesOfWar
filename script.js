@@ -284,7 +284,7 @@ class Character{
 
         if (this.isMakingAShield) {
             if (this.cirkleRadius < this.cirkleMax) {
-                this.cirkleRadius += 20/this.wizardPowerDecay;
+                this.cirkleRadius += 25/this.wizardPowerDecay;
             }
             else {
                 this.wizardPowerDecay++;
@@ -525,8 +525,8 @@ function startGame() {
     document.getElementById('foreground').style.visibility = 'hidden';
 
 
-    dispAnim = setInterval(displayLoop, 14);//starts game loop time is in ms
-    loopAnim = setInterval(tick, 14);//starts game loop time is in ms
+    dispAnim = setInterval(displayLoop, 34);//starts game loop time is in ms
+    loopAnim = setInterval(tick, 34);//starts game loop time is in ms
 
 }
 
@@ -544,14 +544,14 @@ var unitLongsword = new CharacterTemplate(120, 5, 5, new animation("unit_knight_
     "Knight", 100, "unit_knight_fight1.png", 0, false);
 var unitArcher = new CharacterTemplate(100, 3, 3, new animation("unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png"),
     "Wizard", 100, "unit_mage_fight1.png", 0, true);
-var unitPolearm = new CharacterTemplate(100, 20, 3, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
+var unitPolearm = new CharacterTemplate(100, 18, 4, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
     "Archer", 100, "unit_archer_fight1.png", 150, false);
 
 var AIunitLongsword = new CharacterTemplate(120, 5, 5, new animation("unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png"),
     "Knight", 100, "unit_knight_fight1.png", 0, false);
 var AIunitArcher = new CharacterTemplate(100, 3, 3, new animation("unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png"),
     "Wizard", 100, "unit_mage_fight1.png", 0, true);
-var AIunitPolearm = new CharacterTemplate(100, 20, 3, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
+var AIunitPolearm = new CharacterTemplate(100, 18, 4, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
     "Archer", 100, "unit_archer_fight1.png", 150, false);
 
 var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
@@ -1061,24 +1061,24 @@ function tick() {
     updateMissleBehavior();
     animateClouds();
 }
-var stop2 = 0;
+//var stop2 = 0;
 
 function manageAITurn() {
-    if (AIisProducingSmth == false && stop2 != 2) {
-        AIisProducingSmth = true;
+    if (AIisProducingSmth == false) {// && stop2 != 2) {
+        /*AIisProducingSmth = true;
         if(stop2 == 0){
             unitSelector = 0;
         }
         else{
-            unitSelector = 2;
+            unitSelector = 0;
         }
         stop2++;
 
         AIproduction = new ProductionElement(1, AIunitsAvailable[unitSelector].thumbnail, AIunitsAvailable[unitSelector].productionCost, 0);
-        AIproduction.Character = AIunitsAvailable[unitSelector];
+        AIproduction.Character = AIunitsAvailable[unitSelector];*/
 
-        
-        /*unitSelector = Math.floor(Math.random()*3);
+        AIisProducingSmth = true;
+        unitSelector = Math.floor(Math.random()*3);
         if(colitionHandler(windowWidth - (windowWidth * 0.12), (-10), (windowWidth * 0.12), maxUnitCount + 1, 0, false, true)){
             AIproduction = new ProductionElement(2, "icon_speed3.png", 100, unitSelector);
             var upgrade = new CharacterTemplate(AIunitsAvailable[unitSelector].health, AIunitsAvailable[unitSelector].dmg, AIunitsAvailable[unitSelector].moveSpeed, AIunitsAvailable[unitSelector].animations, AIunitsAvailable[unitSelector].name, AIunitsAvailable[unitSelector].productionCost, AIunitsAvailable[unitSelector].thumbnail, AIunitsAvailable[unitSelector].range, AIunitsAvailable[unitSelector].isWizard);
@@ -1096,7 +1096,7 @@ function manageAITurn() {
         else{
             AIproduction = new ProductionElement(1, AIunitsAvailable[unitSelector].thumbnail, AIunitsAvailable[unitSelector].productionCost, 0);
             AIproduction.Character = AIunitsAvailable[unitSelector];
-        }*/
+        }
 
 
         /*if(colitionHandler(windowWidth - (windowWidth * 0.12),-10,(windowWidth * 0.12),maxUnitCount+1,0,false,true)){//TODO this aint great
