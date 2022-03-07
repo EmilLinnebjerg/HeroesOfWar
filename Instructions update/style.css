@@ -1,0 +1,31 @@
+img
+{
+position:absolute;
+}
+#backgroud
+{
+  z-index: 1;
+}
+#menuBack
+{
+  z-index: 2;
+}
+#mnuStart
+{
+  left : 250px;
+  top: 150px;  
+  opacity: 60%;
+  visibility: hidden;
+}
+body
+{
+  cursor: url(cursor_sword.png), pointer;
+}
+#menuDiv{
+  z-index: 3;
+}
+#instext{
+left: 250px;
+top: 50px;
+width: 300px;
+}
