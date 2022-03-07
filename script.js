@@ -618,6 +618,31 @@ function makeAHealthBar(barLeft, barElement) {
     document.body.appendChild(barElement);
 }
 
+var unitName = document.createElement('div');
+var unitHealth = document.createElement('div');
+var unitDMG = document.createElement('div');
+var unitSpeed = document.createElement('div');
+
+function updateUnitInfoPanel(unit) {
+    unitName.innerHTML = unit.name.bold();
+    unitHealth.textContent = "Health: " + unit.health;
+    unitDMG.textContent = "Damage: " + unit.dmg;
+    unitSpeed.textContent = "Speed: " + unit.moveSpeed;
+
+    unitHealth.style.color = "black";
+    unitDMG.style.color = "black";
+    unitSpeed.style.color = "black";
+    unitOverview.appendChild(unitName);
+    unitOverview.appendChild(unitHealth);
+    unitOverview.appendChild(unitDMG);
+    unitOverview.appendChild(unitSpeed);
+}
+
+function highlightUpgrade(element, text) {
+    element.style.color = "blue";
+    element.textContent += text;
+}
+
 //background1.click;
 //background1.addEventListener('click', function () {alert("now")});
 var unit1 = document.createElement("img");
@@ -630,6 +655,25 @@ unit3.src = "rome.png";
 createAUnitBuildElement(unit1, "unit1", 0.803, 1);
 createAUnitBuildElement(unit2, "unit2", 0.703, 2);
 createAUnitBuildElement(unit3, "unit3", 0.603, 3);
+
+var unitOverview = document.createElement('div');
+unitOverview.style.background = "gray";
+unitOverview.style.width = (0.24 * windowWidth) + "px";
+unitOverview.style.height = (0.24 * windowHeight) + "px";
+unitOverview.style.position = "absolute";
+unitOverview.style.top = 0 + "px";
+unitOverview.style.left = (0.43 * windowWidth) + "px";
+
+var unitOverviewBack = document.createElement('div');
+unitOverviewBack.style.background = "black";
+unitOverviewBack.style.width = (0.24 * windowWidth) + 4 + "px";
+unitOverviewBack.style.height = (0.24 * windowHeight) + 2 + "px";
+unitOverviewBack.style.position = "absolute";
+unitOverviewBack.style.top = 0 + "px";
+unitOverviewBack.style.left = (0.43 * windowWidth) - 2 + "px";
+
+document.body.appendChild(unitOverviewBack);
+document.body.appendChild(unitOverview);
 
 var productuinBarProgress = document.createElement('div');
 productuinBarProgress.style.background = "white";
@@ -690,7 +734,8 @@ function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
     btn.style.top = (yOffSetBtn * windowHeight) + margin  + "px";
     btn.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin  + "px";
             btn.click;
-            btn.addEventListener('click', function () { document.getElementById("click"); click.play(); selectProduction(1, index) });
+    btn.addEventListener('click', function () { document.getElementById("click"); click.play(); selectProduction(1, index) });
+    btn.addEventListener('mouseover', function () { updateUnitInfoPanel(unitsAvailable[index-1]); });
 
             var namef = name + "back";
             var front = document.createElement('div');
@@ -716,11 +761,11 @@ function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
             document.body.appendChild(front);
 
             var souce = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
-    makeUpgradeElement("icon_speed3.png", xOffSetBtn, yOffSetBtn + 0.12, 2, index)
-    makeUpgradeElement("icon_damage3.png", xOffSetBtn, yOffSetBtn + 0.18, 3, index)
+    makeUpgradeElement("icon_speed3.png", xOffSetBtn, yOffSetBtn + 0.12, 2, index, unitSpeed)
+    makeUpgradeElement("icon_damage3.png", xOffSetBtn, yOffSetBtn + 0.18, 3, index, unitDMG)
         }
 
-function makeUpgradeElement(imgSrc, xOffSetBtn, yOffSetBtn, type, index) {
+function makeUpgradeElement(imgSrc, xOffSetBtn, yOffSetBtn, type, index, element) {
     widthBtn = (0.09 * windowWidth);
     heightBtn = (0.05 * windowHeight);
             margin = 5;
@@ -733,7 +778,8 @@ function makeUpgradeElement(imgSrc, xOffSetBtn, yOffSetBtn, type, index) {
     UpgradeImg.style.top = (yOffSetBtn * windowHeight) + margin / 2 + "px";
     UpgradeImg.style.left = (xOffSetBtn * windowWidth) + widthBtn + margin + (widthBtn / 2 - heightBtn/2) +"px";
             UpgradeImg.click;
-            UpgradeImg.addEventListener('click', function () { selectProduction(type, index) });
+    UpgradeImg.addEventListener('click', function () { selectProduction(type, index) });
+    UpgradeImg.addEventListener('mouseover', function () { updateUnitInfoPanel(unitsAvailable[index - 1]); highlightUpgrade(element, " + 5"); });
 
             var front = document.createElement('div');
             front.style.background = "gray";
@@ -781,7 +827,7 @@ function selectProduction(type, index) {
                     {
                         productionQueue[productionEndSpot] = new ProductionElement(2, "icon_speed3.png", upgradeReletivePrice, index - 1);
                         var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].animations, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range, unitsAvailable[index - 1].isWizard);
-                        upgrade.moveSpeed -= 190;
+                        upgrade.moveSpeed -= 1;
                         if(upgrade.moveSpeed <= 10){
                             upgrade.moveSpeed = 10;
                             //TODO deny upgrades ================================================================================
@@ -795,7 +841,7 @@ function selectProduction(type, index) {
                     {
                         productionQueue[productionEndSpot] = new ProductionElement(2, "icon_damage3.png", upgradeReletivePrice, index - 1);
                         var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].animations, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range, unitsAvailable[index - 1].isWizard);
-                        upgrade.dmg += 100;
+                        upgrade.dmg += 5;
 
                         productionQueue[productionEndSpot].Character = upgrade;
                         addToProduction(productionEndSpot);
