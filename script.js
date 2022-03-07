@@ -538,18 +538,18 @@ function ProductionElement(type, thumbnail, totalTime, overwrite) {
         }
 //alert("Starting");
 
-var unitLongsword = new CharacterTemplate(100, 5, 3, new animation("unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png"),
+var unitLongsword = new CharacterTemplate(150, 5, 3, new animation("unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png"),
     "Knight", 100, "unit_knight_fight1.png", 0, false);
-var unitArcher = new CharacterTemplate(100, 5, 3, new animation("unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png"),
+var unitArcher = new CharacterTemplate(100, 3, 4, new animation("unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png"),
     "Wizard", 100, "unit_mage_fight1.png", 0, true);
-var unitPolearm = new CharacterTemplate(100, 5, 3, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
+var unitPolearm = new CharacterTemplate(100, 8, 3, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
     "Archer", 100, "unit_archer_fight1.png", 150, false);
 
-var AIunitLongsword = new CharacterTemplate(100, 5, 3, new animation("unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png"),
+var AIunitLongsword = new CharacterTemplate(150, 5, 3, new animation("unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png"),
     "Knight", 100, "unit_knight_fight1.png", 0, false);
-var AIunitArcher = new CharacterTemplate(100, 5, 3, new animation("unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png"),
+var AIunitArcher = new CharacterTemplate(100, 3, 4, new animation("unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png"),
     "Wizard", 100, "unit_mage_fight1.png", 0, true);
-var AIunitPolearm = new CharacterTemplate(100, 5, 3, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
+var AIunitPolearm = new CharacterTemplate(100, 8, 3, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
     "Archer", 100, "unit_archer_fight1.png", 150, false);
 
 var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
@@ -634,6 +634,7 @@ function updateUnitInfoPanel(unit) {
     unitSpeed.textContent = "Speed: " + unit.moveSpeed;
     unitDMGIMG.src = "icon_damage2.png";
     unitSpeedIMG.src = "icon_speed2.png";
+    unitHealthIMG.src = "icon_health.png";
 
     unitHealth.style.color = "black";
     unitDMG.style.color = "black";
@@ -781,7 +782,7 @@ function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
             document.body.appendChild(front);
 
             var souce = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
-    makeUpgradeElement("icon_speed3.png", xOffSetBtn, yOffSetBtn + 0.12, 2, index, unitHealth)
+    makeUpgradeElement("icon_health.png", xOffSetBtn, yOffSetBtn + 0.12, 2, index, unitHealth)
     makeUpgradeElement("icon_damage3.png", xOffSetBtn, yOffSetBtn + 0.18, 3, index, unitDMG)
         }
 
@@ -843,9 +844,9 @@ function selectProduction(type, index) {
                         addToProduction(productionEndSpot);
                         break;
                     }
-                case 2://speed
+                case 2://health
                     {
-                        productionQueue[productionEndSpot] = new ProductionElement(2, "icon_speed3.png", upgradeReletivePrice, index - 1);
+                        productionQueue[productionEndSpot] = new ProductionElement(2, "icon_health.png", upgradeReletivePrice, index - 1);
                         var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].animations, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range, unitsAvailable[index - 1].isWizard);
                         upgrade.health += 5;
                         /*if(upgrade.moveSpeed <= 10){
