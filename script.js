@@ -270,6 +270,7 @@ class Character{
         var moveby;
         var renderOffSetXlocal;
         var wizardDoingDmg = false;
+        var direction = 1;
 
         if (this.BelongsToPlayer) {
             moveby = 10;
@@ -278,6 +279,7 @@ class Character{
         if (!this.BelongsToPlayer) {
             moveby = -10;
             renderOffSetXlocal = 25;
+            direction = -1;
         }
 
         if (this.isMakingAShield) {
@@ -337,8 +339,8 @@ class Character{
             }
             else {
                 if (this.isWizard) {
-                    colitionHandler(this.CharacterXOffSet, this.cirkleMax / 2, this.unitWidth, this.index, this.range, true, false);
-
+                    colitionHandler(this.CharacterXOffSet, (this.cirkleMax / 2)*direction, this.unitWidth, this.index, this.range, true, false);
+                    
                     if (unitsToGiveShield.length == 0) {
                         if (queuedDMG.length > 0) {
                             if (this.BelongsToPlayer == queuedDMG[queuedDMG.length - 1].isPlayers && queuedDMG[queuedDMG.length - 1].dealer == this.index) {
@@ -1065,10 +1067,10 @@ function manageAITurn() {
     if (AIisProducingSmth == false && stop2 != 2) {
         AIisProducingSmth = true;
         if(stop2 == 0){
-            unitSelector = 0;
+            unitSelector = 1;
         }
         else{
-            unitSelector = 1;
+            unitSelector = 0;
         }
         stop2++;
 
@@ -1077,6 +1079,7 @@ function manageAITurn() {
         AIproduction = new ProductionElement(1, AIunitsAvailable[unitSelector].thumbnail, AIunitsAvailable[unitSelector].productionCost, 0);
         AIproduction.Character = AIunitsAvailable[unitSelector];
 
+        
         /*unitSelector = Math.floor(Math.random()*3);
         if(colitionHandler(windowWidth - (windowWidth * 0.12), (-10), (windowWidth * 0.12), maxUnitCount + 1, 0, false, true)){
             AIproduction = new ProductionElement(2, "icon_speed3.png", 100, unitSelector);
