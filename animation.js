@@ -81,7 +81,7 @@ class animation {
         }
         else {
             if (ranged > 0) {
-                if (nextAtk < atkSpeed / 3) {
+                if (nextAtk <= atkSpeed / 3) {
                     return this.attack3;
                 }
                 if ((nextAtk < (atkSpeed / 3) * 2) && (nextAtk > atkSpeed / 3)) {
@@ -90,7 +90,7 @@ class animation {
                 return this.attack1;
             }
 
-            if (nextmove < speed / 3) {
+            if (nextmove <= speed / 3) {
                 return this.attack3;
             }
             if ((nextmove < (speed / 3) * 2) && (nextmove > speed / 3)) {

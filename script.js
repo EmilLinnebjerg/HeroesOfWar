@@ -538,19 +538,19 @@ function ProductionElement(type, thumbnail, totalTime, overwrite) {
         }
 //alert("Starting");
 
-var unitLongsword = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
-    "Knight", 100, "rome.png", 0, false);
-var unitArcher = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
-    "Wizard", 100, "archer.png", 0, true);
-var unitPolearm = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
-    "Archer", 100, "rome.png", 150, false);
+var unitLongsword = new CharacterTemplate(100, 5, 10, new animation("unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png"),
+    "Knight", 100, "unit_knight_fight1.png", 0, false);
+var unitArcher = new CharacterTemplate(100, 5, 10, new animation("unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png"),
+    "Wizard", 100, "unit_mage_fight1.png", 0, true);
+var unitPolearm = new CharacterTemplate(100, 5, 10, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
+    "Archer", 100, "unit_archer_fight1.png", 150, false);
 
-var AIunitLongsword = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
-    "Knight", 100, "rome.png", 0, false);
-var AIunitArcher = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
-    "Wizard", 100, "archer.png", 0, true);
-var AIunitPolearm = new CharacterTemplate(100, 5, 10, new animation("arrow1.png", "arrow2.png", "arrow3.png", "arrow1.png", "arrow2.png", "arrow3.png", "arrow2.png"),
-    "Archer", 100, "rome.png", 150, false);
+var AIunitLongsword = new CharacterTemplate(100, 5, 10, new animation("unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png"),
+    "Knight", 100, "unit_knight_fight1.png", 0, false);
+var AIunitArcher = new CharacterTemplate(100, 5, 10, new animation("unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png"),
+    "Wizard", 100, "unit_mage_fight1.png", 0, true);
+var AIunitPolearm = new CharacterTemplate(100, 5, 10, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
+    "Archer", 100, "unit_archer_fight1.png", 150, false);
 
 var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
 var AIunitsAvailable = [AIunitLongsword, AIunitArcher, AIunitPolearm];
@@ -668,9 +668,9 @@ function highlightUpgrade(element, text) {
 var unit1 = document.createElement("img");
 var unit2 = document.createElement("img");
 var unit3 = document.createElement("img");
-unit1.src = "rome.png";
-unit2.src = "archer.png";
-unit3.src = "rome.png";
+unit1.src = "unit_knight_fight1.png";
+unit2.src = "unit_mage_fight1.png";
+unit3.src = "unit_archer_fight1.png";
 
 createAUnitBuildElement(unit1, "unit1", 0.803, 1);
 createAUnitBuildElement(unit2, "unit2", 0.703, 2);
@@ -742,13 +742,13 @@ document.body.appendChild(unit2);
 document.body.appendChild(unit3);
 
 function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
-    widthBtn = (0.09 * windowWidth);
     heightBtn = (0.10 * windowHeight);
+    widthBtn = (0.09 * windowWidth);
             margin = 5;
             yOffSetBtn = 0.01;
 
             btn.className = name;
-    btn.style.width = widthBtn + "px";
+    btn.style.width = heightBtn + "px";
     btn.style.height = heightBtn + "px";
     btn.style.position = "absolute";
     btn.style.top = (yOffSetBtn * windowHeight) + margin  + "px";
@@ -909,14 +909,20 @@ function manageProduction() {
     if (AIisProducingSmth) {
         AIproduction.timeLeft--;
         if (AIproduction.timeLeft == 0) {
-            if (!colitionHandler(windowWidth - (windowWidth * 0.12), (-10), (windowWidth * 0.12), maxUnitCount + 1, 0, false, true)) {//TODO the image width here is not great, also the index is ok but no amazing
-                add_mem(AIproduction.Character, windowWidth, false);
+            if(AIproduction.type == 1){
+                if (!colitionHandler(windowWidth - (windowWidth * 0.12), (-10), (windowWidth * 0.12), maxUnitCount + 1, 0, false, true)) {//TODO the image width here is not great, also the index is ok but no amazing
+                    add_mem(AIproduction.Character, windowWidth, false);
+                    AIisProducingSmth = false;
+                }
+                else {
+                    AIproduction.timeLeft = 10;
+                    return;
+                }
+            }
+            else{
                 AIisProducingSmth = false;
             }
-            else {
-                AIproduction.timeLeft = 10;
-                return;
-            }
+
         }
     }
     if (!isProducingSmth) { return;}
@@ -1057,8 +1063,26 @@ function manageAITurn() {
     if (AIisProducingSmth == false) {
         AIisProducingSmth = true;
         unitSelector = Math.floor(Math.random()*3);
-        AIproduction = new ProductionElement(1, AIunitsAvailable[unitSelector].thumbnail, AIunitsAvailable[unitSelector].productionCost, 0);
-        AIproduction.Character = AIunitsAvailable[unitSelector];
+        if(colitionHandler(windowWidth - (windowWidth * 0.12), (-10), (windowWidth * 0.12), maxUnitCount + 1, 0, false, true)){
+            AIproduction = new ProductionElement(2, "icon_speed3.png", 100, unitSelector);
+            var upgrade = new CharacterTemplate(AIunitsAvailable[unitSelector].health, AIunitsAvailable[unitSelector].dmg, AIunitsAvailable[unitSelector].moveSpeed, AIunitsAvailable[unitSelector].animations, AIunitsAvailable[unitSelector].name, AIunitsAvailable[unitSelector].productionCost, AIunitsAvailable[unitSelector].thumbnail, AIunitsAvailable[unitSelector].range, AIunitsAvailable[unitSelector].isWizard);
+            
+            if(unitSelector = Math.floor(Math.random()*1)){
+                upgrade.dmg += 5;
+            }
+            else{
+                upgrade.health += 5;
+            }
+
+            AIproduction.Character = upgrade;
+
+        }
+        else{
+            AIproduction = new ProductionElement(1, AIunitsAvailable[unitSelector].thumbnail, AIunitsAvailable[unitSelector].productionCost, 0);
+            AIproduction.Character = AIunitsAvailable[unitSelector];
+        }
+
+
         /*if(colitionHandler(windowWidth - (windowWidth * 0.12),-10,(windowWidth * 0.12),maxUnitCount+1,0,false,true)){//TODO this aint great
             
             return;
