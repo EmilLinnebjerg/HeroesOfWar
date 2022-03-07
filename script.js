@@ -623,19 +623,39 @@ var unitHealth = document.createElement('div');
 var unitDMG = document.createElement('div');
 var unitSpeed = document.createElement('div');
 
+var unitHealthIMG = document.createElement('img');
+var unitDMGIMG = document.createElement('img');
+var unitSpeedIMG = document.createElement('img');
+
 function updateUnitInfoPanel(unit) {
     unitName.innerHTML = unit.name.bold();
     unitHealth.textContent = "Health: " + unit.health;
     unitDMG.textContent = "Damage: " + unit.dmg;
     unitSpeed.textContent = "Speed: " + unit.moveSpeed;
+    unitDMGIMG.src = "icon_damage2.png";
+    unitSpeedIMG.src = "icon_speed2.png";
 
     unitHealth.style.color = "black";
     unitDMG.style.color = "black";
     unitSpeed.style.color = "black";
     unitOverview.appendChild(unitName);
-    unitOverview.appendChild(unitHealth);
-    unitOverview.appendChild(unitDMG);
-    unitOverview.appendChild(unitSpeed);
+    setUpInfoSection(unitHealth, unitHealthIMG, 18);
+    setUpInfoSection(unitDMG, unitDMGIMG, 18*2);
+    setUpInfoSection(unitSpeed, unitSpeedIMG, 18*3);
+}
+
+function setUpInfoSection(element, elementImg, YLocation){
+    element.style.position = "absolute";
+    element.style.top = YLocation + "px";
+    element.style.left = 18 + "px";
+
+    elementImg.style.position = "absolute";
+    elementImg.style.top = YLocation + 5 + "px";
+    elementImg.style.width = 14 + "px";
+    elementImg.style.height = 14 + "px";
+
+    unitOverview.appendChild(element);
+    unitOverview.appendChild(elementImg);
 }
 
 function highlightUpgrade(element, text) {
@@ -761,7 +781,7 @@ function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
             document.body.appendChild(front);
 
             var souce = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
-    makeUpgradeElement("icon_speed3.png", xOffSetBtn, yOffSetBtn + 0.12, 2, index, unitSpeed)
+    makeUpgradeElement("icon_speed3.png", xOffSetBtn, yOffSetBtn + 0.12, 2, index, unitHealth)
     makeUpgradeElement("icon_damage3.png", xOffSetBtn, yOffSetBtn + 0.18, 3, index, unitDMG)
         }
 
@@ -827,11 +847,11 @@ function selectProduction(type, index) {
                     {
                         productionQueue[productionEndSpot] = new ProductionElement(2, "icon_speed3.png", upgradeReletivePrice, index - 1);
                         var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].animations, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range, unitsAvailable[index - 1].isWizard);
-                        upgrade.moveSpeed -= 1;
-                        if(upgrade.moveSpeed <= 10){
+                        upgrade.health += 5;
+                        /*if(upgrade.moveSpeed <= 10){
                             upgrade.moveSpeed = 10;
                             //TODO deny upgrades ================================================================================
-                        }
+                        }*/
 
                         productionQueue[productionEndSpot].Character = upgrade;
                         addToProduction(productionEndSpot);
