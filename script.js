@@ -284,7 +284,7 @@ class Character{
 
         if (this.isMakingAShield) {
             if (this.cirkleRadius < this.cirkleMax) {
-                this.cirkleRadius += 10/this.wizardPowerDecay;
+                this.cirkleRadius += 20/this.wizardPowerDecay;
             }
             else {
                 this.wizardPowerDecay++;
@@ -540,18 +540,18 @@ function ProductionElement(type, thumbnail, totalTime, overwrite) {
         }
 //alert("Starting");
 
-var unitLongsword = new CharacterTemplate(150, 5, 3, new animation("unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png"),
+var unitLongsword = new CharacterTemplate(120, 5, 5, new animation("unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png"),
     "Knight", 100, "unit_knight_fight1.png", 0, false);
-var unitArcher = new CharacterTemplate(100, 3, 4, new animation("unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png"),
+var unitArcher = new CharacterTemplate(100, 3, 3, new animation("unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png"),
     "Wizard", 100, "unit_mage_fight1.png", 0, true);
-var unitPolearm = new CharacterTemplate(100, 8, 3, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
+var unitPolearm = new CharacterTemplate(100, 20, 3, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
     "Archer", 100, "unit_archer_fight1.png", 150, false);
 
-var AIunitLongsword = new CharacterTemplate(150, 5, 3, new animation("unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png"),
+var AIunitLongsword = new CharacterTemplate(120, 5, 5, new animation("unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png"),
     "Knight", 100, "unit_knight_fight1.png", 0, false);
-var AIunitArcher = new CharacterTemplate(100, 3, 4, new animation("unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png"),
+var AIunitArcher = new CharacterTemplate(100, 3, 3, new animation("unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png"),
     "Wizard", 100, "unit_mage_fight1.png", 0, true);
-var AIunitPolearm = new CharacterTemplate(100, 8, 3, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
+var AIunitPolearm = new CharacterTemplate(100, 20, 3, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
     "Archer", 100, "unit_archer_fight1.png", 150, false);
 
 var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
@@ -1067,15 +1067,13 @@ function manageAITurn() {
     if (AIisProducingSmth == false && stop2 != 2) {
         AIisProducingSmth = true;
         if(stop2 == 0){
-            unitSelector = 1;
+            unitSelector = 0;
         }
         else{
-            unitSelector = 0;
+            unitSelector = 2;
         }
         stop2++;
 
-        AIproduction = new ProductionElement(1, AIunitsAvailable[unitSelector].thumbnail, AIunitsAvailable[unitSelector].productionCost, 0);
-        AIproduction.Character = AIunitsAvailable[unitSelector];
         AIproduction = new ProductionElement(1, AIunitsAvailable[unitSelector].thumbnail, AIunitsAvailable[unitSelector].productionCost, 0);
         AIproduction.Character = AIunitsAvailable[unitSelector];
 
