@@ -24,3 +24,8 @@ body
 #menuDiv{
   z-index: 3;
 }
+#instext{
+left: 250px;
+top: 50px;
+width: 300px;
+}
