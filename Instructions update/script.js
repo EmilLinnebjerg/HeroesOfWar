@@ -23,6 +23,7 @@ function splashScreen(){
     let splashBackground = document.createElement('img');
     splashBackground.src = 'logo.png';
     splashBackground.style.left = 90 +'px';
+    splashBackground.style.top = 50 +'px';
     document.body.appendChild(splashBackground);
     splashBackground.style.zIndex=5;
     splashBackground.style.opacity = 0 + '%';
