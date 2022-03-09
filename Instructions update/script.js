@@ -17,6 +17,18 @@ let loopAnim;
 let menuDiv = document.getElementById('menuDiv');
 let menuAnim;
 
+function splashScreen(){
+    let opct = 0;
+    let startLoad = false;
+    let splashBackground = document.createElement('img');
+    splashBackground.src = 'logo.png';
+    splashBackground.style.left = 90 +'px';
+    document.body.appendChild(splashBackground);
+    splashBackground.style.zIndex=5;
+    splashBackground.style.opacity = 0 + '%';
+    let splash = setInterval(()=>{splashBackground.style.opacity = opct +'%';opct+=5;if(opct==100) {startLoad = true; clearInterval(splash);}}, 100);
+    setTimeout(()=>{document.body.removeChild(splashBackground); loadAnim()}, 3000)
+}
 function loadAnim() {
     let gameTitle = document.createElement('img');
     document.body.appendChild(gameTitle);
@@ -41,7 +53,7 @@ function loadAnim() {
     }, 30);
     document.addEventListener('contextmenu', (event => event.preventDefault()));
 }
-loadAnim();
+splashScreen();
 function instructions()
 {
     document.getElementById('instructions').removeEventListener('click',instructions);
@@ -558,7 +570,7 @@ function startGame() {
     document.getElementById('gameTitle').style.visibility = 'hidden';
     document.getElementById('background').style.visibility = 'hidden';
     document.getElementById('foreground').style.visibility = 'hidden';
-
+    document.getElementById('instructions').style.visibility = 'hidden';
 
     dispAnim = setInterval(displayLoop, 34);//starts game loop time is in ms
     loopAnim = setInterval(tick, 34);//starts game loop time is in ms
