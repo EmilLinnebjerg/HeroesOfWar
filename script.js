@@ -17,6 +17,40 @@ let loopAnim;
 let menuDiv = document.getElementById('menuDiv');
 let menuAnim;
 
+function skippableVideo(){
+    let clickToStart = document.createElement('h2');
+    clickToStart.style.position = 'absolute';
+    clickToStart.style.top= 225+'px';
+    clickToStart.style.left = 350 + 'px';
+    clickToStart.style.zIndex = 7;
+    clickToStart.style.color = 'green';
+    clickToStart.style.opacity = 60+'%';
+    clickToStart.innerText = 'Click to start';
+    clickToStart.addEventListener("click", ()=>{document.body.removeChild(clickToStart); vid.play();});
+    document.body.appendChild(clickToStart);
+    let vidBlock = document.createElement('div');
+    vidBlock.id = 'vidBlock';
+    vidBlock.style.position = 'absolute';
+    vidBlock.style.zIndex=5;
+    document.body.appendChild(vidBlock);
+    let vid = document.createElement('video');
+    let vidSrc = document.createElement('source');
+    vidSrc.src='mov_bbb.mp4';
+    vidSrc.type='video/mp4';
+    vid.appendChild(vidSrc);
+    vid.height = 500;
+    vid.width=850;
+    vidBlock.appendChild(vid);
+    vidBlock.addEventListener("click", ()=>{document.body.removeChild(clickToStart); vid.play()})
+    vid.addEventListener("ended", videoEndHandler,false);
+
+    window.addEventListener('keydown',(e)=>{if(e.code==='Space') videoEndHandler();});
+    function videoEndHandler(){
+        document.body.removeChild(vidBlock);
+        window.removeEventListener("keydown", videoEndHandler, true);
+        splashScreen();
+    }
+}
 function splashScreen() {
     let opct = 0;
     let startLoad = false;
@@ -36,14 +70,14 @@ function loadAnim() {
     gameTitle.setAttribute('id', 'gameTitle');
     gameTitle.src = 'heroesofwar_logo.png';
     gameTitle.style.width = 500 + "px";
-    gameTitle.style.height = 200;
+    gameTitle.style.height = 150 + 'px';
     gameTitle.style.zIndex = 3;
     gameTitle.style.left = 190 + 'px';
     gameTitle.style.top = 0 + 'px';
     let pos = 0;
     menuAnim = setInterval(() => {
         gameTitle.style.top = pos + 'px';
-        if (pos < 68)
+        if (pos < 48)
             pos++;
         else {
             document.getElementById('mnuStart').style.visibility = 'visible';
@@ -54,7 +88,7 @@ function loadAnim() {
     }, 30);
     document.addEventListener('contextmenu', (event => event.preventDefault()));
 }
-splashScreen();
+skippableVideo();
 function instructions() {
     document.getElementById('instructions').removeEventListener('click', instructions);
     let bg = document.createElement('img');
