@@ -1163,7 +1163,7 @@ function manageAITurn() {
         if(colitionHandler(windowWidth - (windowWidth * 0.12), (-10), (windowWidth * 0.12), maxUnitCount + 1, 0, false, true)){
             AIproduction = new ProductionElement(2, "icon_speed3.png", 100, unitSelector);
             var upgrade = new CharacterTemplate(AIunitsAvailable[unitSelector].health, AIunitsAvailable[unitSelector].dmg, AIunitsAvailable[unitSelector].moveSpeed, AIunitsAvailable[unitSelector].animations, AIunitsAvailable[unitSelector].name, AIunitsAvailable[unitSelector].productionCost, AIunitsAvailable[unitSelector].thumbnail, AIunitsAvailable[unitSelector].range, AIunitsAvailable[unitSelector].isWizard);
-            
+
             if(unitSelector = Math.floor(Math.random()*1)){
                 upgrade.dmg += 5;
             }
@@ -1290,7 +1290,7 @@ function gameOver(playerWon) {
     document.body.appendChild(endImage);
     endImage.src = 'playAgain.png';
     endImage.style.zIndex = 7;
-    endImage.style.left = 250 + 'px';
+    endImage.style.left = 280 + 'px';
     endImage.style.top = -50 + 'px';
     endImage.style.opacity = 60 + '%';
     endImage.addEventListener('mouseover', (e) => { e.target.style.opacity = 100 + '%'; });
@@ -1301,9 +1301,9 @@ function gameOver(playerWon) {
     setInterval(() => {
         endImage.style.top = pos + 'px';
         wonImage.style.top = winpos + 'px';
-        if (pos < 150)
+        if (pos < 80)
             pos++;
-        if (winpos < 90)
+        if (winpos < 130)
             winpos++;
     }, 30);
 
