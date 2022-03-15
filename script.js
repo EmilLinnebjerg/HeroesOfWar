@@ -163,12 +163,12 @@ class missle{
 
         if (this.isPlayers) {
             startPosU = (this.startX + this.renderOffSetX);
-            arrowMove = 5;
+            arrowMove = 10;
         }
 
         if (!this.isPlayers) {
             startPosU = this.startX;
-            arrowMove = -5;
+            arrowMove = -10;
         }
 
         if (this.missleCooldown == 0) {
@@ -275,6 +275,16 @@ class magicShield {
     }
 }
 
+var deathSmokeAI = document.createElement('img');
+deathSmokeAI.src = "smoke.gif";
+deathSmokeAI.style.position = "absolute";
+deathSmokeAI.style.top = (windowHeight * 0.60) + "px";
+
+var deathSmoke = document.createElement('img');
+deathSmoke.src = "smoke.gif";
+deathSmoke.style.position = "absolute";
+deathSmoke.style.top = (windowHeight * 0.60) + "px";
+
 class Character{
     unitIsAlive;
     isMakingAShield;
@@ -283,6 +293,8 @@ class Character{
     cirkleRadius;
     cirkleMax = 220;
     wizardPowerDecay;
+
+    dyingTimer = 20;
 
     constructor(health, dmg, moveSpeed, animations, startPos, index, belongsToPlayer, range, isWizard) {
         this.unitWidth = (windowWidth * 0.12);
@@ -476,6 +488,20 @@ class Character{
     }
 
     renderUpdate() {
+        if (!this.unitIsAlive) {
+            this.dyingTimer--;
+            if (this.dyingTimer == 0) {
+                if (this.isPlayers) {
+                    document.body.removeChild(deathSmoke);
+                }
+                else {
+                    document.body.removeChild(deathSmokeAI);
+                }
+            }
+
+            return;
+        }
+
         this.npc.style.left = this.CharacterXOffSet + "px";
         if (this.isMakingAShield) {
             this.cirkle.style.width = this.cirkleRadius + "px";
@@ -499,6 +525,14 @@ class Character{
         this.health -= amount;
         if (this.health <= 0) {
             this.unitIsAlive = false;
+            if (this.isPlayers) {
+                document.body.appendChild(deathSmoke);
+                deathSmoke.style.left = this.CharacterXOffSet - 10 + "px";
+            }
+            else {
+                document.body.appendChild(deathSmokeAI);
+                deathSmokeAI.style.left = this.CharacterXOffSet - 30 + "px";
+            }
             document.body.removeChild(this.npc);
 
             if (this.isMakingAShield) {
@@ -507,6 +541,7 @@ class Character{
         }
     }
 }
+
 
 function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range, isWizard, noDMG) {
     if (moveBy > 0) {//handles players units colition
@@ -1065,7 +1100,7 @@ function manageProduction() {
 
 function updateTheUnits(unitList) {
     unitList.forEach((character) => {
-        if (character != null && character.unitIsAlive == true) {
+        if (character != null && (character.unitIsAlive == true || character.dyingTimer > 0)) {
             character.renderUpdate();
         }
     })
