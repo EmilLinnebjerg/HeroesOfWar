@@ -1233,7 +1233,11 @@ function manageDamage() {
         if (damageHandled.isPlayers) {
             if (damageHandled.baseDamage) {
                 AIHealthOffSet -= damageHandled.dmg;
+                if (AIHealthOffSet < windowHeight * 0.10) {
+                    healthBarAI.style.background = "red";
+                }
                 if (AIHealthOffSet < 0) {
+                    healthBarAI.style.height = 0 + "px";
                     gameOver(true);
                 }
                 continue;
@@ -1243,7 +1247,11 @@ function manageDamage() {
         if (!damageHandled.isPlayers) {
             if (damageHandled.baseDamage) {
                 PlayerHealthOffSet -= damageHandled.dmg;
+                if (PlayerHealthOffSet < windowHeight * 0.10) {
+                    healthBarPlayer.style.background = "red";
+                }
                 if (PlayerHealthOffSet < 0) {
+                    healthBarPlayer.style.height = 0 + "px";
                     gameOver(false);
                 }
                 continue;
