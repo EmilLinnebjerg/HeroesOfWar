@@ -25,7 +25,7 @@ cloudHider2.style.zIndex = 1;
 document.body.appendChild(cloudHider2);
 
 var clouds1 = document.createElement("img");
-clouds1.src = "Clouds.png";
+clouds1.src = "Data/Sprites/Clouds.png";
 clouds1.style.position = "absolute";
 clouds1.style.width = windowWidth + "px";
 clouds1.style.height = windowHeight + "px";
@@ -34,7 +34,7 @@ clouds1.style.left = 0 + "px";
 document.body.appendChild(clouds1);
 
 var clouds2 = document.createElement("img");
-clouds2.src = "Clouds.png";
+clouds2.src = "Data/Sprites/Clouds.png";
 clouds2.style.position = "absolute";
 clouds2.style.width = windowWidth + "px";
 clouds2.style.height = windowHeight + "px";
@@ -43,7 +43,7 @@ clouds2.style.left = 0 + "px";
 document.body.appendChild(clouds2);
 
 var hillsBack = document.createElement("img");
-hillsBack.src = "Hills.png";
+hillsBack.src = "Data/Sprites/Hills.png";
 hillsBack.style.position = "absolute";
 hillsBack.style.width = windowWidth + "px";
 hillsBack.style.height = windowHeight + "px";

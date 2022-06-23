@@ -3,29 +3,30 @@
   <head>
     <meta charset="utf-8">
     <title>Heroes of War</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="Data/style.css">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   </head>
   <body>
       <div id="menuDiv">
-          <img src="foreground 1000x500.png" width="850" height="500" style="z-index: 3;" id='foreground' />
-          <img src="background_1000x500.png" width="850" height="500" style="z-index: 1;" id='background' />
-          <img src="Clouds.png" width="850" height="500" style="z-index: 1;" id='backgroundcloud' />
-          <img src="Hills.png" width="850" height="500" style="z-index: 1; top: 50px; " id='backgroundhills' />
-          <img src="foregroundBridgeOnly.png" width="850" height="500" style="z-index: 3">
-          <img src="StartGame.png" onclick="startGame()" id="mnuStart" style="z-index: 3;" />
-          <img src="Instructions.png" id="instructions" style="z-index: 3; top: 220px; left: 250px; visibility: hidden; opacity: 60%;"/>
+          <img src="Data/Sprites/foreground 1000x500.png" width="850" height="500" style="z-index: 3;" id='foreground' />
+          <img src="Data/Sprites/background_1000x500.png" width="850" height="500" style="z-index: 1;" id='background' />
+          <img src="Data/Sprites/Clouds.png" width="850" height="500" style="z-index: 1;" id='backgroundcloud' />
+          <img src="Data/Sprites/Hills.png" width="850" height="500" style="z-index: 1; top: 50px; " id='backgroundhills' />
+          <img src="Data/Sprites/foregroundBridgeOnly.png" width="850" height="500" style="z-index: 3">
+          <img src="Data/Sprites/StartGame.png" onclick="startGame()" id="mnuStart" style="z-index: 3;" />
+          <img src="Data/Sprites/Instructions.png" id="instructions" style="z-index: 3; top: 220px; left: 250px; visibility: hidden; opacity: 60%;"/>
       </div>
    <div id = "playboard">
-    <img src="background_1000x500.png" width="850" height="500" id="back"/>
+    <img src="Data/Sprites/background_1000x500.png" width="850" height="500" id="back"/>
   </div>
  <audio id = "bm">
-   <source src="bm.mp3" type="audio/mpeg"/>
+   <source src="Data/Sprites/bm.mp3" type="audio/mpeg"/>
  </audio>
   <audio id = "click">
-    <source src="click.mp3" type="audio/mpeg" id ="clkSrc"/>
+    <source src="Data/Sprites/click.mp3" type="audio/mpeg" id ="clkSrc"/>
   </audio>
-  <script src="animation.js"></script>
-    <script src="script.js"></script>
+  <script src="Data/animation.js"></script>
+    <script src="Data/script.js"></script>
+    <script src="Data/multiplayer.js"></script>
   </body>
 </html>

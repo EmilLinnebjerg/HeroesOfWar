@@ -35,7 +35,7 @@ function skippableVideo(){
     document.body.appendChild(vidBlock);
     let vid = document.createElement('video');
     let vidSrc = document.createElement('source');
-    vidSrc.src='mov_bbb.mp4';
+    vidSrc.src='Data/Sprites/mov_bbb.mp4';
     vidSrc.type='video/mp4';
     vid.appendChild(vidSrc);
     vid.height = 500;
@@ -55,7 +55,7 @@ function splashScreen() {
     let opct = 0;
     let startLoad = false;
     let splashBackground = document.createElement('img');
-    splashBackground.src = 'logo.png';
+    splashBackground.src = 'Data/Sprites/logo.png';
     splashBackground.style.left = 90 + 'px';
     splashBackground.style.top = 50 + 'px';
     document.body.appendChild(splashBackground);
@@ -68,7 +68,7 @@ function loadAnim() {
     let gameTitle = document.createElement('img');
     document.body.appendChild(gameTitle);
     gameTitle.setAttribute('id', 'gameTitle');
-    gameTitle.src = 'heroesofwar_logo.png';
+    gameTitle.src = 'Data/Sprites/heroesofwar_logo.png';
     gameTitle.style.width = 500 + "px";
     gameTitle.style.height = 150 + 'px';
     gameTitle.style.zIndex = 3;
@@ -92,7 +92,7 @@ skippableVideo();
 function instructions() {
     document.getElementById('instructions').removeEventListener('click', instructions);
     let bg = document.createElement('img');
-    bg.src = 'instruct_back.png';
+    bg.src = 'Data/Sprites/instruct_back.png';
     document.body.appendChild(bg);
     bg.style.zIndex = 3;
     bg.style.opacity = 90 + '%';
@@ -103,7 +103,7 @@ function instructions() {
     insText.setAttribute('id', 'instext');
     insText.style.position = 'absolute';
     insText.style.zIndex = 4;
-    insText.src = 'insText.png';
+    insText.src = 'Data/Sprites/insText.png';
     document.body.appendChild(insText);
     let keyEvent = window.addEventListener('keydown', closeIns);
 
@@ -133,7 +133,7 @@ class missle{
         this.myIndex = myIndex;
 
         this.projectile = document.createElement("img");
-        this.projectile.src = "Arrow.png";
+        this.projectile.src = "Data/Sprites/Arrow.png";
         this.projectile.width = 32;
         this.projectile.height = 16;
         this.projectile.style.left = startX + renderOffSetX + "px";
@@ -276,12 +276,12 @@ class magicShield {
 }
 
 var deathSmokeAI = document.createElement('img');
-deathSmokeAI.src = "smoke.gif";
+deathSmokeAI.src = "Data/Sprites/smoke.gif";
 deathSmokeAI.style.position = "absolute";
 deathSmokeAI.style.top = (windowHeight * 0.60) + "px";
 
 var deathSmoke = document.createElement('img');
-deathSmoke.src = "smoke.gif";
+deathSmoke.src = "Data/Sprites/smoke.gif";
 deathSmoke.style.position = "absolute";
 deathSmoke.style.top = (windowHeight * 0.60) + "px";
 
@@ -656,19 +656,19 @@ function ProductionElement(type, thumbnail, totalTime, overwrite) {
         }
 //alert("Starting");
 
-var unitLongsword = new CharacterTemplate(120, 5, 5, new animation("unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png"),
-    "Knight", 100, "unit_knight_fight1.png", 0, false);
-var unitArcher = new CharacterTemplate(100, 3, 3, new animation("unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png"),
-    "Wizard", 100, "unit_mage_fight1.png", 0, true);
-var unitPolearm = new CharacterTemplate(100, 18, 4, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
-    "Archer", 100, "unit_archer_fight1.png", 150, false);
+var unitLongsword = new CharacterTemplate(120, 5, 5, new animation("Data/Sprites/unit_knight_fight1.png", "Data/Sprites/unit_knight_fight2.png", "Data/Sprites/unit_knight_fight3.png", "Data/Sprites/unit_knight_fight1.png", "Data/Sprites/unit_knight_fight2.png", "Data/Sprites/unit_knight_fight3.png", "Data/Sprites/unit_knight_fight1.png"),
+    "Knight", 100, "Data/Sprites/unit_knight_fight1.png", 0, false);
+var unitArcher = new CharacterTemplate(100, 3, 3, new animation("Data/Sprites/unit_mage_fight1.png", "Data/Sprites/unit_mage_fight2.png", "Data/Sprites/unit_mage_fight3.png", "Data/Sprites/unit_mage_fight1.png", "Data/Sprites/unit_mage_fight2.png", "Data/Sprites/unit_mage_fight3.png", "Data/Sprites/unit_mage_fight1.png"),
+    "Wizard", 100, "Data/Sprites/unit_mage_fight1.png", 0, true);
+var unitPolearm = new CharacterTemplate(100, 18, 4, new animation("Data/Sprites/unit_archer_fight1.png", "Data/Sprites/unit_archer_fight2.png", "Data/Sprites/unit_archer_fight3.png", "Data/Sprites/unit_archer_fight3.png", "Data/Sprites/unit_archer_fight1.png", "Data/Sprites/unit_archer_fight2.png", "Data/Sprites/unit_archer_fight1.png"),
+    "Archer", 100, "Data/Sprites/unit_archer_fight1.png", 150, false);
 
-var AIunitLongsword = new CharacterTemplate(120, 5, 5, new animation("unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png", "unit_knight_fight2.png", "unit_knight_fight3.png", "unit_knight_fight1.png"),
-    "Knight", 100, "unit_knight_fight1.png", 0, false);
-var AIunitArcher = new CharacterTemplate(100, 3, 3, new animation("unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png", "unit_mage_fight2.png", "unit_mage_fight3.png", "unit_mage_fight1.png"),
-    "Wizard", 100, "unit_mage_fight1.png", 0, true);
-var AIunitPolearm = new CharacterTemplate(100, 18, 4, new animation("unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight3.png", "unit_archer_fight3.png", "unit_archer_fight1.png", "unit_archer_fight2.png", "unit_archer_fight1.png"),
-    "Archer", 100, "unit_archer_fight1.png", 150, false);
+var AIunitLongsword = new CharacterTemplate(120, 5, 5, new animation("Data/Sprites/unit_knight_fight1.png", "Data/Sprites/unit_knight_fight2.png", "Data/Sprites/unit_knight_fight3.png", "Data/Sprites/unit_knight_fight1.png", "Data/Sprites/unit_knight_fight2.png", "Data/Sprites/unit_knight_fight3.png", "Data/Sprites/unit_knight_fight1.png"),
+    "Knight", 100, "Data/Sprites/unit_knight_fight1.png", 0, false);
+var AIunitArcher = new CharacterTemplate(100, 3, 3, new animation("Data/Sprites/unit_mage_fight1.png", "Data/Sprites/unit_mage_fight2.png", "Data/Sprites/unit_mage_fight3.png", "Data/Sprites/unit_mage_fight1.png", "Data/Sprites/unit_mage_fight2.png", "Data/Sprites/unit_mage_fight3.png", "Data/Sprites/unit_mage_fight1.png"),
+    "Wizard", 100, "Data/Sprites/unit_mage_fight1.png", 0, true);
+var AIunitPolearm = new CharacterTemplate(100, 18, 4, new animation("Data/Sprites/unit_archer_fight1.png", "Data/Sprites/unit_archer_fight2.png", "Data/Sprites/unit_archer_fight3.png", "Data/Sprites/unit_archer_fight3.png", "Data/Sprites/unit_archer_fight1.png", "Data/Sprites/unit_archer_fight2.png", "Data/Sprites/unit_archer_fight1.png"),
+    "Archer", 100, "Data/Sprites/unit_archer_fight1.png", 150, false);
 
 var unitsAvailable = [unitLongsword, unitArcher, unitPolearm];
 var AIunitsAvailable = [AIunitLongsword, AIunitArcher, AIunitPolearm];
@@ -680,7 +680,7 @@ var isProducing = 0;
 var isProducingSmth = false;
 var AIisProducingSmth = false;
 var background1 = document.createElement("img");
-background1.src = "foreground 1000x500.png";
+background1.src = "Data/Sprites/foreground 1000x500.png";
 background1.style.position = "absolute";
 background1.style.width = windowWidth + "px";
 background1.style.height = windowHeight + "px";
@@ -689,7 +689,7 @@ background1.style.left = 0 + "px";
 document.body.appendChild(background1);
 
 var background2 = document.createElement("img");
-background2.src = "foregroundBridgeOnly.png";
+background2.src = "Data/Sprites/foregroundBridgeOnly.png";
 background2.style.position = "absolute";
 background2.style.width = windowWidth + "px";
 background2.style.height = windowHeight + "px";
@@ -750,9 +750,9 @@ function updateUnitInfoPanel(unit) {
     unitHealth.textContent = "Health: " + unit.health;
     unitDMG.textContent = "Damage: " + unit.dmg;
     unitSpeed.textContent = "Speed: " + unit.moveSpeed;
-    unitDMGIMG.src = "icon_damage2.png";
-    unitSpeedIMG.src = "icon_speed2.png";
-    unitHealthIMG.src = "icon_health.png";
+    unitDMGIMG.src = "Data/Sprites/icon_damage2.png";
+    unitSpeedIMG.src = "Data/Sprites/icon_speed2.png";
+    unitHealthIMG.src = "Data/Sprites/icon_health.png";
 
     unitHealth.style.color = "black";
     unitDMG.style.color = "black";
@@ -787,9 +787,9 @@ function highlightUpgrade(element, text) {
 var unit1 = document.createElement("img");
 var unit2 = document.createElement("img");
 var unit3 = document.createElement("img");
-unit1.src = "unit_knight_fight1.png";
-unit2.src = "unit_mage_fight1.png";
-unit3.src = "unit_archer_fight1.png";
+unit1.src = "Data/Sprites/unit_knight_fight1.png";
+unit2.src = "Data/Sprites/unit_mage_fight1.png";
+unit3.src = "Data/Sprites/unit_archer_fight1.png";
 
 createAUnitBuildElement(unit1, "unit1", 0.803, 1);
 createAUnitBuildElement(unit2, "unit2", 0.703, 2);
@@ -900,8 +900,8 @@ function createAUnitBuildElement(btn, name, xOffSetBtn, index) {
             document.body.appendChild(front);
 
             var souce = "3c242eb786d1eae1ac53ed1713794e30--sci-fi-fantasy-fantasy-world.jpg";
-    makeUpgradeElement("icon_health.png", xOffSetBtn, yOffSetBtn + 0.12, 2, index, unitHealth)
-    makeUpgradeElement("icon_damage3.png", xOffSetBtn, yOffSetBtn + 0.18, 3, index, unitDMG)
+    makeUpgradeElement("Data/Sprites/icon_health.png", xOffSetBtn, yOffSetBtn + 0.12, 2, index, unitHealth)
+    makeUpgradeElement("Data/Sprites/icon_damage3.png", xOffSetBtn, yOffSetBtn + 0.18, 3, index, unitDMG)
         }
 
 function makeUpgradeElement(imgSrc, xOffSetBtn, yOffSetBtn, type, index, element) {
@@ -952,7 +952,7 @@ function selectProduction(type, index) {
             }
 
             isProducingSmth = true;
-            document.body.style = "cursor: url(cursor_sword.png), pointer";
+            document.body.style = "cursor: url(Data/Sprites/cursor_sword.png), pointer";
             switch (type)
             {
                 case 1://unit
@@ -964,7 +964,7 @@ function selectProduction(type, index) {
                     }
                 case 2://health
                     {
-                        productionQueue[productionEndSpot] = new ProductionElement(2, "icon_health.png", upgradeReletivePrice, index - 1);
+                        productionQueue[productionEndSpot] = new ProductionElement(2, "Data/Sprites/icon_health.png", upgradeReletivePrice, index - 1);
                         var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].animations, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range, unitsAvailable[index - 1].isWizard);
                         upgrade.health += 5;
                         /*if(upgrade.moveSpeed <= 10){
@@ -978,7 +978,7 @@ function selectProduction(type, index) {
                     }
                 case 3://dmg
                     {
-                        productionQueue[productionEndSpot] = new ProductionElement(2, "icon_damage3.png", upgradeReletivePrice, index - 1);
+                        productionQueue[productionEndSpot] = new ProductionElement(2, "Data/Sprites/icon_damage3.png", upgradeReletivePrice, index - 1);
                         var upgrade = new CharacterTemplate(unitsAvailable[index - 1].health, unitsAvailable[index - 1].dmg, unitsAvailable[index - 1].moveSpeed, unitsAvailable[index - 1].animations, unitsAvailable[index - 1].name, unitsAvailable[index - 1].productionCost, unitsAvailable[index - 1].thumbnail, unitsAvailable[index - 1].range, unitsAvailable[index - 1].isWizard);
                         upgrade.dmg += 5;
 
@@ -1140,9 +1140,9 @@ function displayLoop() {
         return;
     }
     else{
-        unit1.style.cursor = "url(cursor_sword.png), pointer";
-        unit2.style.cursor = "url(cursor_sword.png), pointer";
-        unit3.style.cursor = "url(cursor_sword.png), pointer";
+        unit1.style.cursor = "url(Data/Sprites/cursor_sword.png), pointer";
+        unit2.style.cursor = "url(Data/Sprites/cursor_sword.png), pointer";
+        unit3.style.cursor = "url(Data/Sprites/cursor_sword.png), pointer";
     }
     if (isProducingSmth) {
         document.body.appendChild(productuinBarProgress)
@@ -1196,7 +1196,7 @@ function manageAITurn() {
         AIisProducingSmth = true;
         unitSelector = Math.floor(Math.random()*3);
         if(colitionHandler(windowWidth - (windowWidth * 0.12), (-10), (windowWidth * 0.12), maxUnitCount + 1, 0, false, true)){
-            AIproduction = new ProductionElement(2, "icon_speed3.png", 100, unitSelector);
+            AIproduction = new ProductionElement(2, "Data/Sprites/icon_speed3.png", 100, unitSelector);
             var upgrade = new CharacterTemplate(AIunitsAvailable[unitSelector].health, AIunitsAvailable[unitSelector].dmg, AIunitsAvailable[unitSelector].moveSpeed, AIunitsAvailable[unitSelector].animations, AIunitsAvailable[unitSelector].name, AIunitsAvailable[unitSelector].productionCost, AIunitsAvailable[unitSelector].thumbnail, AIunitsAvailable[unitSelector].range, AIunitsAvailable[unitSelector].isWizard);
 
             if(unitSelector = Math.floor(Math.random()*1)){
@@ -1285,7 +1285,7 @@ function add_mem(unit, position, isPlayers) {
 function add_wiz(){
   let playDiv = document.getElementById('playboard');
   let wiz = document.createElement('img');
-  wiz.src = "archer.gif";
+  wiz.src = "Data/Sprites/.gif";
   wiz.style.zIndex = 50;
   wiz.style.top = 200 + "px";
   playDiv.appendChild(wiz);
@@ -1326,12 +1326,12 @@ function gameOver(playerWon) {
     wonImage.style.left = 250 + 'px';
     wonImage.style.top = 0 + 'px';
     if (PlayerHealthOffSet <= 0)
-        wonImage.src = "computerWon.png"
+        wonImage.src = "Data/Sprites/computerWon.png"
     if (AIHealthOffSet <= 0)
-        wonImage.src = "youWon.png"
+        wonImage.src = "Data/Sprites/youWon.png"
     let endImage = document.createElement('img');
     document.body.appendChild(endImage);
-    endImage.src = 'playAgain.png';
+    endImage.src = 'Data/Sprites/playAgain.png';
     endImage.style.zIndex = 7;
     endImage.style.left = 280 + 'px';
     endImage.style.top = -50 + 'px';
