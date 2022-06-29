@@ -10,10 +10,23 @@ position:absolute;
 {
   z-index: 2;
 }
-#mnuStart
+#mnuStartSing
 {
   left : 250px;
   top: 150px;  
+  opacity: 60%;
+  visibility: hidden;
+}
+#mnuStartSkir
+{
+  left : 250px;
+  top: 220px;  
+  opacity: 60%;
+  visibility: hidden;
+}
+#instructions{
+  left : 250px;
+  top: 290px;  
   opacity: 60%;
   visibility: hidden;
 }
@@ -27,5 +40,5 @@ body
 #instext{
 left: 250px;
 top: 50px;
-width: 300px;
+width: 450px;
 }

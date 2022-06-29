@@ -13,8 +13,9 @@
           <img src="Data/Sprites/Clouds.png" width="850" height="500" style="z-index: 1;" id='backgroundcloud' />
           <img src="Data/Sprites/Hills.png" width="850" height="500" style="z-index: 1; top: 50px; " id='backgroundhills' />
           <img src="Data/Sprites/foregroundBridgeOnly.png" width="850" height="500" style="z-index: 3">
-          <img src="Data/Sprites/StartGame.png" onclick="startGame()" id="mnuStart" style="z-index: 3;" />
-          <img src="Data/Sprites/Instructions.png" id="instructions" style="z-index: 3; top: 220px; left: 250px; visibility: hidden; opacity: 60%;"/>
+          <img src="Data/Sprites/StartGame.png" onclick="leaveMainMenu(), alert('hmm'); loadSinglePlayer()" id="mnuStartSing" style="z-index: 3;" />
+          <img src="Data/Sprites/StartGame.png" onclick="leaveMainMenu(), startGame()" id="mnuStartSkir" style="z-index: 3;" />
+          <img src="Data/Sprites/Instructions.png" id="instructions" style="z-index: 3;"/>
       </div>
    <div id = "playboard">
     <img src="Data/Sprites/background_1000x500.png" width="850" height="500" id="back"/>
@@ -25,8 +26,10 @@
   <audio id = "click">
     <source src="Data/Sprites/click.mp3" type="audio/mpeg" id ="clkSrc"/>
   </audio>
+  <script src="Data/mainMenu.js"></script>
   <script src="Data/animation.js"></script>
     <script src="Data/script.js"></script>
+    <script src="Data/singleplayer.js"></script>
     <script src="Data/multiplayer.js"></script>
   </body>
 </html>

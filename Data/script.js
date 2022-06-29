@@ -1,3 +1,6 @@
+var isInDev = true;
+var backImgAssets = 'Data/Sprites/';
+
 let counter = 0;
 let pos = Math.floor(Math.random() * 200);
 let maxUnitCount = 8;
@@ -51,43 +54,7 @@ function skippableVideo(){
         splashScreen();
     }
 }
-function splashScreen() {
-    let opct = 0;
-    let startLoad = false;
-    let splashBackground = document.createElement('img');
-    splashBackground.src = 'Data/Sprites/logo.png';
-    splashBackground.style.left = 90 + 'px';
-    splashBackground.style.top = 50 + 'px';
-    document.body.appendChild(splashBackground);
-    splashBackground.style.zIndex = 5;
-    splashBackground.style.opacity = 0 + '%';
-    let splash = setInterval(() => { splashBackground.style.opacity = opct + '%'; opct += 5; if (opct == 100) { startLoad = true; clearInterval(splash); } }, 100);
-    setTimeout(() => { document.body.removeChild(splashBackground); loadAnim() }, 3000)
-}
-function loadAnim() {
-    let gameTitle = document.createElement('img');
-    document.body.appendChild(gameTitle);
-    gameTitle.setAttribute('id', 'gameTitle');
-    gameTitle.src = 'Data/Sprites/heroesofwar_logo.png';
-    gameTitle.style.width = 500 + "px";
-    gameTitle.style.height = 150 + 'px';
-    gameTitle.style.zIndex = 3;
-    gameTitle.style.left = 190 + 'px';
-    gameTitle.style.top = 0 + 'px';
-    let pos = 0;
-    menuAnim = setInterval(() => {
-        gameTitle.style.top = pos + 'px';
-        if (pos < 48)
-            pos++;
-        else {
-            document.getElementById('mnuStart').style.visibility = 'visible';
-            document.getElementById('instructions').style.visibility = 'visible';
-            document.getElementById('instructions').addEventListener('click', instructions);
-            clearInterval(menuAnim);
-        }
-    }, 30);
-    document.addEventListener('contextmenu', (event => event.preventDefault()));
-}
+
 skippableVideo();
 function instructions() {
     document.getElementById('instructions').removeEventListener('click', instructions);
@@ -115,6 +82,13 @@ function instructions() {
         document.getElementById('instructions').addEventListener('click', instructions);
         window.removeEventListener('keydown', closeIns);
     }
+}
+
+function startGame() {
+
+    dispAnim = setInterval(displayLoop, 34);//starts game loop time is in ms
+    loopAnim = setInterval(tick, 34);//starts game loop time is in ms
+
 }
 
 class missle{
@@ -622,28 +596,6 @@ function colitionHandler(currentPos, moveBy, imageWidth, myIndex, range, isWizar
         }
     }
     return false;
-}
-
-document.getElementById('mnuStart').addEventListener("mouseover", function (event) { event.target.style.opacity = "100%" });
-document.getElementById('mnuStart').addEventListener("mouseleave", function (event) { event.target.style.opacity = "60%" });
-document.getElementById('instructions').addEventListener("mouseover", function (event) { event.target.style.opacity = "100%" });
-document.getElementById('instructions').addEventListener("mouseleave", function (event) { event.target.style.opacity = "60%" });
-
-function startGame() {
-    clearInterval(menuAnim);
-    document.getElementById("bm");
-    bm.loop = true;
-    bm.play();
-    document.getElementById('menuDiv').style.visibility = 'hidden';
-    document.getElementById('mnuStart').style.visibility = 'hidden';
-    document.getElementById('gameTitle').style.visibility = 'hidden';
-    document.getElementById('background').style.visibility = 'hidden';
-    document.getElementById('foreground').style.visibility = 'hidden';
-    document.getElementById('instructions').style.visibility = 'hidden';
-
-    dispAnim = setInterval(displayLoop, 34);//starts game loop time is in ms
-    loopAnim = setInterval(tick, 34);//starts game loop time is in ms
-
 }
 
 function ProductionElement(type, thumbnail, totalTime, overwrite) {
